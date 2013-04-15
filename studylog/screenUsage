@@ -1,0 +1,8 @@
+screenUsage
+
+	screen 用于将当前命令执行 添加到后台进行操作
+		--->screen -S test -t test 新建一个screen
+		--->screen -ls 查看当前运行中的screen
+		--->screen -x test 进入名为test的screen
+		--->screen 终止 Ctrl + D
+		--->screen 退出但不终止 Ctrl + A --> Ctrl + D
