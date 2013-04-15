@@ -1,0 +1,10 @@
+study-2013.4.15
+1.Sublime Text 2 输入中文的方法 
+			--> 快捷键 Ctrl + Shift + Z --> 输入 --> Enter
+2.Extjs4.0
+		-->命名空间和类以驼峰式命名，并且至少包含一个顶级命名空间
+			--->例:	MyCompany.data.CoolProxy
+					MyCompany.Application
+		-->静态常量应该所有大写，
+			--->例:	Ext.MessageBox.SING = "holle word"
+			
