@@ -1,8 +1,0 @@
-screen 的用法
-	-->创建：screen -S test -t test
-	-->查看运行中的 : screen -ls
-	-->进入: screen -x name
-	-->终止: Ctrl + D
-	-->退出但不终止： Ctrl + A --> Ctrl + D
-
-	用途:将当前任务加入到后台进程进行处理
