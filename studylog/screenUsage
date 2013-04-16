@@ -6,3 +6,5 @@ screenUsage
 		--->screen -x test 进入名为test的screen
 		--->screen 终止 Ctrl + D
 		--->screen 退出但不终止 Ctrl + A --> Ctrl + D
+
+	scp admin@192.168.1.1 /home/dev/text  ~/dev/ 从另一台系统拷贝文件

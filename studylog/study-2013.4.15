@@ -83,4 +83,75 @@ study-2013.4.15
 **************************************************
 
 	->Components
-		-->XType --- 
+		-->XType --- 例:xtype: ' panel' 当需要时，实例panel对象
+		-->Showing --- 例:panel.show();显示面板
+		-->Hiding --- 例:panel.hide();隐藏面板
+		-->Floating --- 例:floating:true 组件可浮动
+		-->Subclassing --- 例: extend:'Ext.Component' 子类化
+		-->Template Methods --- 例: 当extend:'Ext.Component'后,onRender: function(){}可以调用其继承的方法和增加自己的方法
+		小结:
+		Components 主要介绍了一些常用的组件方法
+
+*********************************************
+
+	->The Date Package
+		-->model
+			--->例:	//建立一个Model
+					Ext.define('User',{
+						extend:'Ext.data.Model',
+						fields:[
+							{name:'id',type:'int},
+							{name:'name',type:'string'}
+						]
+					});
+					//建立一个Ajax Proxy
+					Ext.create('Ext.data.Store',{
+						model:'User',
+						proxy:{
+							type:'ajax',
+							url:'users.json',
+							reader:'json'
+						},
+						autoLoad:true
+					});
+					//建立一个Store
+					{
+						success: true,
+						users:[
+							{id:1,name:'Ed'},
+							{id:2,name:'Tommy'}
+						]
+					}
+
+		-->Sorting and Grouping 过滤与分组
+			--->例: Ext.create('Ext.data.Store',{
+						model:'User',
+						sorters:['name','id'],
+						//过滤名称不为Ed的用户
+						filters:{ 
+							property:'name',
+							value:'Ed'
+						},
+						//以年龄分组
+						groupField:'age',
+						//降序排列
+						groupDir:'DESC'
+					});
+
+		-->Validations 验证(利用正则表达式)
+			--->例:	Ext.define('User', {
+    					extend: 'Ext.data.Model',
+    					fields: ...,
+
+    					validations: [
+        					{type: 'presence', 	name: 'name'}, //确保有值
+					        {type: 'length',   	name: 'name', min: 5}, //在多少字符之间
+					        {type: 'format',   	name: 'age', matcher: /\d+/}, //正则表达式判断
+					        {type: 'inclusion', name: 'gender', list: ['male', 'female']}, //只允许一个字符表示
+					        {type: 'exclusion', name: 'name', list: ['admin']} //不允许为这个字段
+
+    					],
+
+   						 proxy: ...
+					});
+					
