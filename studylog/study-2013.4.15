@@ -172,4 +172,7 @@ study-2013.4.15
 		-->Ext.apply(Object obj,Object config,Object defaults) //将一个对象的属性拷贝到另一个之中
 			--参数说明: obj -- 目标拷贝对象 ; config -- 源拷贝对象属性集 ; defautts -- 默认属性值 ; 
 
+		-->启动rails
+			---> rails server -p 3000
+
 					
