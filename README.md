@@ -18,3 +18,6 @@ ExtJS 任务
         --当定义静态方法或类或变量的时候，在运行后，将被载入到内存中的静态保存区，当调用时将从静态保存区中调出
 
         /home/dev/Work/ninja/app/assets/javascripts/ninja/grid/PositionsGrid.js
+
+        升级内核命令:
+          --

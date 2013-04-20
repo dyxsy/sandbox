@@ -1,0 +1,32 @@
+
+3.Rails REST 映射
+	-->index	/pages			GET		返回资源的集合
+	-->show		/pages/1 		GET		返回特定的资源
+	-->new		/pages/new		GET		返回创建资源的表单
+	-->create	/pages			POST	创建新资源
+	-->edit		/pages/1;edit	GET		返回正在编辑资源的表单
+	-->update	/pages/1		PUT		更新资源
+	-->destroy	/pages/1		DELETE	删除资源
+
+4.定义模型间的关联关系
+	-->has_many:	有多个....
+	-->belongs_to:	属于.....
+
+1.创建rails应用程序
+	-->rails railscoders
+		--->rails railscoders--database=mysql ==> 创建rails应用程序并指定数据库
+2.在mysql中创建数据库
+	-->mysql -u root ==> 进入mysql
+	-->create rails_development ==> 创建数据库
+	-->
+3.建立模型
+	-->ruby script/generate scaffold_resource Name
+	--->数据表的名字和model的名字必须有关联：
+		1. 表名小写，model名的第一个字母大写；
+		2. 表名用复数形式(如contacts),model用单数形式(如Contact)
+
+4.运行迁移任务，创建数据库表
+	-->rake db:migrate
+
+5.添加嵌套的资源路由映射 
+	-->config/routes.rb

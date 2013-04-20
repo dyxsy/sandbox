@@ -172,7 +172,33 @@ study-2013.4.15
 		-->Ext.apply(Object obj,Object config,Object defaults) //将一个对象的属性拷贝到另一个之中
 			--参数说明: obj -- 目标拷贝对象 ; config -- 源拷贝对象属性集 ; defautts -- 默认属性值 ; 
 
-		-->启动rails
+		-->启动rails服务
 			---> rails server -p 3000
+		-->项目前的准备
+			--->格式:	h2 需求
 
+							*
+
+						h2 方案
+
+							*
+
+						h2 实现
+
+							*
+		-->WebSocket
+			--->
+
+
+		-->Mysql
+			--->mysql -uroot 
+				show databases
+				use ninja_development
+				delete from schema_migrations where version = '15';
+				drop table users;
+				show tables
 					
+		-->重建 rake db:migrate
+
+		-->创建controller
+			--->rails g controller admins
