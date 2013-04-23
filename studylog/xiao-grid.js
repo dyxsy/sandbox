@@ -21,7 +21,8 @@ Ext.define( 'Mans',{
   fields: [ //定义Model中的参数
     {name: 'usName', type: 'string',mapping:'usName'},
     {name: 'age', type: 'int', defaultValue: 18}
-  ]//,
+  ]
+  //,
   // Validatons: [  //可以在Model进行数据验证
   //   {type:'length', fields:'usName', min: 2}
   // ],
