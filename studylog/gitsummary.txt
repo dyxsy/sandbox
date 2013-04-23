@@ -1,5 +1,14 @@
-1. 用 git pull 获得服务器上的最新版本
+1.  git pull 获得服务器上的最新版本
 2. 进行编写 修改之后 用 git add 标记编写 修改后的文件
-3. 用 git status 确认将要提交的文件信息
-4. 用 git commit 将标记文件提交
-5. 用 git push 将文件上传到服务器上
+3.  git status 确认将要提交的文件信息
+4.  git commit 将标记文件提交
+5.  git push 将文件上传到服务器上
+
+
+6. 	git checkout 文件路径	恢复文件
+7. 	git diff 文件路径  查看目录（文件）在working与index file的差别
+8. 	git stash 备份当前工作区的内容
+9. 	git stash 显示Git栈内的所有备份
+10. git stash clear 清空Git栈中的备份
+11. git stash pop 从当前Git栈中读取最近一次内容
+12. git diff --cached 查看index file 与 commit 的差别
