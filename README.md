@@ -20,3 +20,7 @@ ExtJS 任务
 
         升级内核命令:
           --
+
+
+
+          Ext.create('Ninja.window.InvestorsSelectWindow').show();

@@ -1,0 +1,113 @@
+EXTJS4.0WINDOW.WINDOW属性详细信息  
+
+2012-01-16 11:00:55|  分类： EXTJS |字号 订阅
+Ext.Window扩展自Ext.Panel，其xtype值为window。
+
+ 
+
+1、主要配置项：
+      closable：是否允许关闭窗口，默认为true。
+      closeAction：关闭窗口的动作，包括以下两种：
+            close：从DOM删除窗口，销毁窗口及其所属组件，窗口不再可用，重新显示需要调用show方法。此为默认值。
+            hide：通过设置可见性隐藏窗口，窗口还可用，调用show方法后重新显示。
+      constrain：是否约束窗口只能在容器内移动，默认为false。窗口默认渲染到document.body。
+      constrainHeader：是否约束窗口头部只能在容器内移动，默认为false。
+      draggable：是否可拖曳，默认为true。
+      resizable：是否可改变窗口的大小，默认为true。
+      modal：是否为模式窗口，默认为false。
+      maximizable：是否可最大化窗口，默认为false。
+      maximized：是否在初始化时最大化显示窗口，默认为false。
+      x：窗口的X坐标值。
+      y：窗口的Y坐标值。
+      manager：WindowGroup的引用。
+ 
+      expandOnShow：是否在窗口显示时展开它，默认为true。 当取值为false时，collapsed取值为true时，窗口初始显示时收缩。
+      minimizable：是否可最小化窗口，默认为false。需要自定义最小化行为。
+      defaultButton：当窗口获得焦点时，默认获得焦点的按钮。
+      plain：主体背景是否透明，默认为false。
+
+ 
+
+2、主要方法：
+      show( [String/Element animateTarget], [Function callback], [Object scope] )：显示窗口。
+      hide( [String/Element animateTarget], [Function callback], [Object scope] )：隐藏窗口。
+      center()：窗口居中显示。
+      close()：关闭窗口，相当于closeAction值为close的情形。
+      maximize()：最大化窗口。
+      restore()：还原窗口大小。
+      toggleMaximize()：在最大化和还原之间切换。
+ 
+      minimize()：最小化窗口。
+      setActive( Boolean active )：激活窗口。
+      focus()：窗口获得焦点。
+      toBack()：后置窗口。
+      toFront( [Boolean e] )：前置窗口。
+      resize( Ext.Window this, Number width, Number height )：改变大小。
+
+ 
+
+3、Ext.WindowGroup的主要方法：
+      hideAll()
+      sendToBack( String/Object win )
+      bringToFront( String/Object win )
+      get( String/Object id )
+      getActive()
+ 
+      each( Function fn, [Object scope] )
+      getBy( Function fn, [Object scope] )
+
+
+
+
+
+
+
+var window = new Ext.Window({ 
+        ///标题 
+        title: '操作人员管理', 
+        ///宽 
+        width: 500, 
+        ///高 
+        height:500, 
+        ///最小的宽带 
+        minWidth: 300, 
+        ///最小的高度 
+        minHeight: 200, 
+        ///布局的方式 
+        layout: 'fit', 
+        ///是否允许调整大小 
+        resizable:false, 
+        ///是否准许拖动 
+        draggable:true, 
+        ///关闭按钮 
+        closable:true, 
+        ///是否视图中显示 
+        constrain:true, 
+        ///是否为透明背景 
+        plain:true, 
+        ///显示最小化按钮 
+        minimizable:true, 
+        ///最大化按钮 
+        maximizable:true, 
+        ///是否显示收缩按钮 
+        expandOnShow:true, 
+        ///是否显示关闭按钮 
+        closable:false, 
+        ///关闭按钮样式 
+        collapsedCls:"x-plain", 
+         ///不可用时  是否进行遮挡 
+        maskDisabled:true, 
+        ///头部文本 
+        headerAsText:"头部标题", 
+        ///表 
+        bodyStyle:'padding:5px;', 
+        ///按钮的对其方式 
+        buttonAlign:'center', 
+         items: xform, 
+
+        buttons: [{ 
+            text: '关闭' 
+        },{ 
+            text: '取消' 
+        }] 
+    });
