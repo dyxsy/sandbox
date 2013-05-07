@@ -1,0 +1,21 @@
+1、打开源
+
+# vi /etc/apt/sources.list
+2、加入firefox在线安装源 
+
+deb http://packages.linuxmint.com debian import
+3、导入GPG key 
+
+# apt-key adv --recv-key --keyserver keyserver.ubuntu.com 3EE67F3D0FF405B2
+4、更新源
+
+# aptitude update
+5、打开源
+
+# vi /etc/apt/sources.list
+6、加入flashplayer
+
+deb http://www.debian-multimedia.org squeeze main non-free
+7、安装firefox、firefox中文语言包及flashplayer（flashplugin）
+
+# aptitude install firefox firefox-l10n-zh flashplugin-nonfree
