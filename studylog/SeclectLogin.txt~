@@ -1,9 +1,0 @@
-1.在NewFinanceWithWindow类中，找到帐号的item,为其添加listeners事件,设置click方法,显示
-  InvestorsSelectWindow窗体,并传入参数{loginSelect:true},用作判断条件
-
-2.在InvestorsSelectWindow中添加GetInvestorLogin(),在initComponent()
-  进行loginSelect判断，为true，执行GetInvestorLogin()
-
-3.在GetInvestorLogin方法中,对records进行if判断
-
-4.通过Ext.getCmp('').setVlaue('')赋值给帐号的textfield
