@@ -1,0 +1,14 @@
+如果您正在运行 Debian，请尽量使用像 aptitude 或者 synaptic 一样的软件包管理器，代替人工手动操作的方式从这个网页下载并安装软件包。
+想自己安装FlashPlayer插件，只要往您的 /etc/apt/sources.list 文件中像下面这样添加一行:
+deb http://ftp.cn.debian.org/debian squeeze main contrib non-free
+或在 /etc/apt/sources.list.d/ 文件夹下创建新的 sources.list
+
+然后依次运行：
+1. apt-get update
+2. apt-get install flashplugin-nonfree
+
+升级 FlashPlayer 有以下2种方法：
+1. apt-get update&apt-get upgrade    （推荐）
+2. /usr/sbin/update-flashplugin-nonfree -install
+
+该方法的优势：这是官方推荐的安装方式，这样安装是用最新版本的flashplayer替换系统 自带旧版本的flashplayer。而互联网上很多的方法都是新旧版本的flashplayer共存。虽然禁用了旧版本的flashplayer，但是 弊端是显而易见的。因此，如何安装flashplayer相信自己已经有所抉择了。
