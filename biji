@@ -1,0 +1,89 @@
+在config/routes.rb加入 resources :events 
+	就会自动建立四个命名路由,与四个HTTP动词,对应七个Action
+	get    '/events'          => "events#index",   :as => "events"		#复数 
+	post   '/events'          => "events#create",  :as => "events"  	#复数
+	get    '/events/:id'      => "events#show",    :as => "event"   	#单数
+	put    '/events/:id'      => "events#update",  :as => "event"   	#单数
+	delete '/events/:id'      => "events#destroy", :as => "event"		  #单数
+	get    '/events/new'      => "events#new",     :as => "new_event" 	#单数
+	get    '/events/:id/edit' => "events#edit",    :as => "edit_event" 	#单数
+
+	注:这七个是无法修改的,rails默认的
+
+当需要自定义路由时,需要用到:on参数:
+  :on参数有三种取值:
+	member 表示这个路由是针对特定的一个实体对象来进行操作 url:'/:controller/:id/:action'
+	collection 表示这个路由是对实体对象集合来进行操作  url:'/:controller/:action'
+	new 表示新建一个实体 url:'/:controller/:action/new'
+
+	当只有一个时:
+	resources :events do
+		get 'click', :on => member
+  end
+
+  多个时:
+  resources :events do
+    member do
+      get 'click'
+      get 'select'
+    end
+  end
+
+:constraints可以设定一些参数限制:
+  例:id必须为整数
+  match "/events/show/:id" => "events#show", :constraints => {:id => /\d/}
+  例:限定请求的IP地址
+  constraints(:ip => /(^127.0.0.1$)|(^192.168.[0-9]{1,3}.[0-9]{1,3}$)/) do
+    match "/events/show/:id" => "events#show"
+  end
+
+:verb HTTP动词限定
+match "account/overview" => "account#overview", :via => "get"
+
+设置首页:
+root :to => 'welcome#show'
+
+复数资源(resources :events)与单数资源(resource :map)的区别:单数资源没有index action
+
+添加命名空间:
+namespace :admin do
+  resources :projects
+    collection do
+      get 'search'
+    end
+  end
+end
+
+url:'/admin/projects/search(.:format)'
+
+查看所有URL Helper、URL地址和对应的Controller Action:
+rake routes
+
+
+模型验证 :只允许保存有效的字段到数据库中,无法绕过， 便于测试和维护
+客户端验证 :通过js来验证，但容易被绕过验证
+数据库验证 :添加约束，但不适用与大量验证
+控制器验证 :不利于维护和测试
+
+以下几种方法会触发验证
+create
+create!
+save
+save!
+update
+update_attributes
+update_attributes!
+
+以下几种方法，跳过验证，应谨慎使用
+decrement!
+decrement_counter
+increment!
+increment_counter
+toggle!
+touch
+update_all
+update_attribute
+update_column
+update_counters
+
+注：保存也可以跳过验证，通过参数 :validate => false

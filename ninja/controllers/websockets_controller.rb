@@ -1,0 +1,2 @@
+class WebsocketsController < ApplicationController
+end

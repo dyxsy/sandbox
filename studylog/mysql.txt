@@ -63,3 +63,5 @@ mysql -u [user] -p [password] databasename < filename (恢复)
 六、卸载 
 卸载mysql:sudo apt-get remove mysql-server mysql-client 
 sudo apt-get autoremove
+
+pv 文件名  数据库名
