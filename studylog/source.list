@@ -1,0 +1,17 @@
+deb http://mirrors.163.com/debian/ testing main non-free contrib 
+deb-src http://mirrors.163.com/debian/ testing main non-free contrib 
+deb http://packages.linuxmint.com/ debian import 
+deb http://mirrors.163.com/debian-security/ testing/updates main 
+deb-src http://mirrors.163.com/debian-security/ testing/updates main 
+deb http://ftp.cn.debian.org/debian/ squeeze main contrib non-free 
+
+deb http://security.debian.org/ wheezy/updates main contrib 
+deb-src http://security.debian.org/ wheezy/updates main contrib 
+
+# wheezy-updates, previously known as 'volatile'
+# A network mirror was not selected during install.  The following entries
+# are provided as examples, but you should amend them as appropriate
+# for your mirror of choice.
+
+# deb http://ftp.debian.org/debian/ wheezy-updates main contrib 
+# deb-src http://ftp.debian.org/debian/ wheezy-updates main contrib 
