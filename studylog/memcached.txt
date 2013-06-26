@@ -1,0 +1,4 @@
+sudo apt-get install memcached
+sudo apt-get install libevent-dev
+sudo aptitude install libmemcached-dev libsasl2-dev libmemcached-dbg
+gem install memcached
