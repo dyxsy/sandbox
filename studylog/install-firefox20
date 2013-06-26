@@ -19,3 +19,6 @@ deb http://www.debian-multimedia.org squeeze main non-free
 7、安装firefox、firefox中文语言包及flashplayer（flashplugin）
 
 # aptitude install firefox firefox-l10n-zh flashplugin-nonfree
+
+apt-get install
+chromium-browser chromium-browser-l10n

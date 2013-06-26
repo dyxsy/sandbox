@@ -65,3 +65,32 @@ mysql -u [user] -p [password] databasename < filename (恢复)
 sudo apt-get autoremove
 
 pv 文件名  数据库名
+
+
+二、最简单的完美修改方法，修改mysql的/etc/mysql/my.cnf文件中的字符集键值（注意配置的字段细节）：
+
+1、在[client]字段里加入default-character-set=utf8，如下：
+
+[client]
+port = 3306
+socket = /var/lib/mysql/mysql.sock
+default-character-set=utf8
+
+2、在[mysqld]字段里加入character-set-server=utf8，如下：
+
+[mysqld]
+port = 3306
+socket = /var/lib/mysql/mysql.sock
+character-set-server=utf8
+
+3、在[mysql]字段里加入default-character-set=utf8，如下：
+
+[mysql]
+no-auto-rehash
+default-character-set=utf8
+
+修改完成后，service mysql restart重启mysql服务就生效。注意：[mysqld]字段与[mysql]字段是有区别的。这点在网上没人反馈过。
+
+
+scp star@192.168.1.179:/home/star/Work/ninja/ins.dump /home/x/Documents/
+

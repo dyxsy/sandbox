@@ -1,0 +1,119 @@
+h2. 方案
+
+* ExtJS
+ 
+ * Ninja.grid.MarginRateTemplatesGrid :显示保证金率模板列表
+
+ * Ninja.grid.MarginRatesGrid  :保证金率列表(12月)
+ 
+ * Ninja.panel.MarginRatesTemplatesPanel : 保证金率模板panel
+
+  * createMarginRateTemplatesGrid() :实例化保证金率模板列表
+
+  * createMarginRatesGrid() :实例化保证金率列表
+ 
+  * destroyMarginRateTemplate() :删除保证金率模板
+  
+  * selectVarietyMarginRates() :根据品种过滤保证金率列表
+
+ * Ninja.window.NewMarginRatesTemplateWindow :创建保证金率模板窗口
+
+  * copeTemplateMarginRates() :根据已有保证金率模板复制保证金率
+
+  * saveOrUpdateTemplate() :保存或者更新保证金率模板
+
+ * Ninja.form.field.MarginRateTemplatesComboBox : 所有保证金率模板下拉列表
+
+* URL 设计
+
+ * /margin_rate_templates/index.json :列表全部的保证金率模板
+
+ * /margin_rate_templates/create.json :创建保证金率模板
+
+ * /margin_rate_templates/:id/destroy.json :删除指定的保证金率模板
+
+ * /margin_rate_templates/:id/update.json :更新指定的保证金率模板
+
+ * /margin_rate_templates/:id/show.json :根据保证金率模板获得保证金率列表
+
+
+ <pre>
+                        margin_rate_templates GET    /margin_rate_templates(.:format)               margin_rate_templates#index
+                                              POST   /margin_rate_templates(.:format)               margin_rate_templates#create
+                     new_margin_rate_template GET    /margin_rate_templates/new(.:format)           margin_rate_templates#new
+                    edit_margin_rate_template GET    /margin_rate_templates/:id/edit(.:format)      margin_rate_templates#edit
+                         margin_rate_template GET    /margin_rate_templates/:id(.:format)           margin_rate_templates#show
+                                              PUT    /margin_rate_templates/:id(.:format)           margin_rate_templates#update
+                                              DELETE /margin_rate_templates/:id(.:format)           margin_rate_templates#destroy
+ </pre>
+* Model
+
+ * margin_rate_templates(保证金率模板表)(创建)
+
+ * template_margin_rates(模板对应的保证金率表)(创建)
+
+h2. 实现
+
+* ExtJS
+ 
+ * 在Ninja.grid.MarginRatesGrid中,保证金率的数据结构为: month(月)  variety(品种) bear(空方向) bull(多方向)
+
+  * <pre>
+      [{month:1, varitey:au, bear:8, bull:8},{month:2, varitey:au, bear:8, bull:8},...]
+    </pre>
+   
+* URL
+
+ * 创建controllers/margin_rate_templates_controller.rb
+
+  * <pre> 
+ resources :margin_rate_templates
+    </pre>
+
+* Controller
+
+ * 查询保证金率模板的保证金率
+
+  * <pre>
+class MarginRateTemplatesController
+  def show
+      TemplateMarginRate.joins(:margin_rate_templates)
+                        .where("margin_rate_template_id = ?", params[:id])
+  end
+end
+    </pre>
+
+* Model
+
+ * models/margin_rate_template.rb:
+
+  * <pre>
+    has_many :template_margin_rates
+    </pre>
+
+ * models/template_margin_rate.rb:
+
+  * <pre>
+    belongs_to :margin_rate_template
+    </pre>
+
+* 需要创建的表
+
+ * margin_rate_templates(保证金率模板表)
+
+  * <pre>
+      t.string   :name         # 名称
+      t.string   :comment      # 备注
+      t.timestamps
+    </pre>
+
+ * template_margin_rates(模板对应的保证金率表)
+
+  * <pre>
+      t.integer        :margin_rate_template_id        # 保证金率模板Id
+      t.integer        :instrument_id                  # 合约
+      t.string         :instrument_code                # 合约编码
+      t.decimal        :bear,              :precision => 16, :scale => 6  # 空仓保证金率
+      t.decimal        :bull,              :precision => 16, :scale => 6  # 多仓保证金率
+      t.timestamps
+    </pre>

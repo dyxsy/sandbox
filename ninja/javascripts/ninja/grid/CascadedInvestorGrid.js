@@ -137,7 +137,7 @@ Ext.define('Ninja.grid.CascadedInvestorGrid', {
         {text: '当日初始资金',  dataIndex:'yuan_account.current_init_capital',flex:1, renderer : me.formatPrice},
         {text: '总权益',  dataIndex:'yuan_account.total',flex:1, renderer : me.formatPrice},
         {text: '持仓盈亏',  dataIndex:'yuan_account.position_profit', flex:1,renderer : me.formatColorPrice},
-        {text: '平仓盈亏',  dataIndex:'yuan_account.close_profit2', flex:1,renderer : me.formatColorPrice},
+        // {text: '平仓盈亏',  dataIndex:'yuan_account.close_profit2', flex:1,renderer : me.formatColorPrice},
         {text: '总盈亏',  dataIndex:'yuan_account.profit2', flex:1,renderer : me.formatColorPrice},
         {text: '保证金',  dataIndex:'yuan_account.margin',flex:1, renderer : me.formatPrice},
         {text: '风险度',  dataIndex:'yuan_account.risk_degree', flex:1,renderer: me.formatColorPerc},

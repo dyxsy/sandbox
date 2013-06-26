@@ -13,6 +13,10 @@
 #	modified:   app/controllers/finance_withs_controller.rb
 #	modified:   app/controllers/instruments_controller.rb
 #	modified:   app/controllers/investors_controller.rb
+
+
+
+
 #	modified:   app/models/commission_rate.rb
 #	modified:   app/models/commission_rate_item.rb
 #	modified:   app/models/finance_with.rb
@@ -24,6 +28,17 @@
 #	modified:   config/routes.rb
 #	modified:   db/schema.rb
 #
+
+
+
+
+
+
+
+
+
+
+
 # Untracked files:
 #   (use "git add <file>..." to include in what will be committed)
 #
