@@ -1,0 +1,19 @@
+## 163
+deb http://mirrors.163.com/debian wheezy main contrib non-free
+deb http://mirrors.163.com/debian wheezy-proposed-updates main contrib non-free
+deb-src http://mirrors.163.com/debian wheezy main non-free contrib
+deb-src http://mirrors.163.com/debian wheezy-proposed-updates main contrib non-free
+
+## china
+#deb http://ftp.cn.debian.org/debian/ wheezy main contrib non-free
+#deb-src http://ftp.cn.debian.org/debian/ wheezy main contrib non-free
+
+#debian security updates
+deb http://security.debian.org/ wheezy/updates main contrib non-free
+deb-src http://security.debian.org/ squeeze/updates main contrib non-free
+
+#multimedia
+deb http://deb-multimedia.org wheezy main non-free
+
+#virtualbox
+deb http://download.virtualbox.org/virtualbox/debian wheezy contrib
