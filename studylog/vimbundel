@@ -1,0 +1,31 @@
+vim bundel
+
+1.  git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+2.  set nocompatible          
+	filetype off                  
+
+	set rtp+=~/.vim/bundle/vundle/
+	call vundle#rc()
+
+	Bundle 'gmarik/vundle'
+	Bundle 'tpope/vim-fugitive'
+	Bundle 'Lokaltog/vim-easymotion'
+	Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+	Bundle 'tpope/vim-rails.git'
+	Bundle 'L9'
+	Bundle 'FuzzyFinder'
+	Bundle 'git://git.wincent.com/command-t.git'
+	Bundle 'git@github.com:Lokaltog/powerline.git'
+	filetype plugin indent on
+
+
+3. Vundle常用指令
+
+:BundleList 列出已经安装的插件
+:BundleInstall 安装所有配置文件中的插件
+:BundleInstall! 更新所有插件
+:BundleSearch 搜索插件
+:BundleClean! 根据配置文件删除插件
+
+https://github.com/spf13/spf13-vim

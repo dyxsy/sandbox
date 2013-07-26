@@ -1,0 +1,58 @@
+安装好debian6后，无桌面版，
+ 
+sudo aptitude install sudo，  配置 visudo    添加：username  ALL=NOPASSWD: ALL
+sudo aptitude install vim
+sudo aptitude install openssh-server
+ 
+sudo vim /etc/apt/sources.list,添加如下源
+deb http://mirrors.163.com/debian testing main contrib non-free
+deb http://mirrors.163.com/debian stable main contrib non-free
+#deb http://packages.linuxmint.com debian import
+ 
+aptitude dist-upgrade  #更新系统,升级内核，重启，如果出现花屏，请看如下方法http://squall3030.blog.163.com/blog/static/162817020201184952787/
+ 
+sudo aptitude install curl
+sudo aptitude install zlib1g-dev
+sudo aptitude install build-essential automake autoconf
+sudo aptitude install bison
+sudo aptitude install git-core
+sudo aptitude install dh-autoreconf
+sudo aptitude install libreadline-dev
+ 
+$ bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+$ echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile
+$ source ~/.bash_profile
+$ rvm requirements
+ 
+ 
+$ rvm pkg install openssl
+$ rvm pkg install readline
+$ rvm install ruby-1.8.7-head --with-openssl-dir=$rvm_path/usr --with-readline-dir=$rvm_path/usr
+$ rvm install ruby-1.9.3-head --with-openssl-dir=$rvm_path/usr --with-readline-dir=$rvm_path/usr
+ 
+2012－07－02  update
+Repair the rails console can not use the BUG
+If you are a first time installation, use:
+  rvm install ruby-1.9.3-head --with-openssl-dir=$rvm_usr_path --with-readline-dir=$rvm_usr_path
+If you have previously installed, use:
+  rvm reinstall ruby-1.9.3-head --with-openssl-dir=$rvm_usr_path --with-readline-dir=$rvm_usr_path
+ 
+修复rails console 无法使用BUG
+如果你是第一次安装，请使用：
+  rvm install ruby-1.9.3-head --with-openssl-dir=$rvm_usr_path --with-readline-dir=$rvm_usr_path
+如果你以前安装过，请使用：
+   rvm reinstall ruby-1.9.3-head --with-openssl-dir=$rvm_usr_path --with-readline-dir=$rvm_usr_path
+ 
+rvm use ruby-1.9.3-head --default
+bundle install
+sudo aptitude install libmysqlclient-dev libmysqld-dev
+sudo aptitude install mysql-server-5.5 mysql-client-5.5
+sudo aptitude install memcached
+sudo aptitude install libmemcache-dev libmemcached-dev
+sudo aptitude install libmagick-dev libmagickcore-dev libmagickwand-dev
+sudo aptitude install spidermonkey-bin
+ 
+sudo aptitude install gnome
+ 
+sudo aptitude install ttf-wqy-microhei  ttf-wqy-zenhei  xfonts-wqy  # 显示中文
+sudo aptitude install scim scim-pinyin                 
