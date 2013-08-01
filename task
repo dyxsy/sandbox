@@ -13,19 +13,19 @@ lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
 同步合约，用户，成交记录和登录日志 (缺用户操作日志)
 
 交易日使用: 
-	TradingDay = "2013-07-31".
+	TradingDay = "2013-08-01".
   Reqs = [varieties, instruments, investors, settlements].
   rf_cheetah_sync:run(TradingDay, Reqs).
   q().退出  重启一下 服务
 
   同步实时行情, 分钟K线
-  TradingDay = "2013-07-31".
+  TradingDay = "2013-08-01".
   Reqs2 = [varieties, instruments, rt_markets, candlesticks].
   rf_cheetah_sync:run(TradingDay, Reqs2).
   如果遇到timeout 要进入数据库 market 删除表candlesticks和表market_ticks 中 今天的数据
 
 非交易日使用: 
-	TradingDay = "2013-07-31".
+	TradingDay = "2013-08-01".
   rf_cheetah_sync:run(TradingDay, not_trading_day).  
 
 审核晋级用户
@@ -37,7 +37,7 @@ root登陆 密码:root@lktz
 要先审核名单晋级才能初始化
 
 比赛成绩计算初始化 (缺用户操作日志)
-TradingDay = "2013-07-31".
+TradingDay = "2013-08-01".
 contest_initor:do_init(TradingDay).
 
 计算初赛，复赛成绩 (缺用户操作日志)
@@ -52,19 +52,19 @@ rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
 rocket_finance_manager:count_inactive_days().
 
 计算单笔 (缺用户操作日志)
-TradingDay = "2013-07-31".
+TradingDay = "2013-08-01".
 rocket_finance_manager:analyze_investments(TradingDay).
 
 搬行情
 
 计算权益日K线 (缺用户操作日志)*
-TradingDay = "2013-07-31".
+TradingDay = "2013-08-01".
 equity_candlestick_manager:calculate(TradingDay).
 
 导入实盘成绩
 bundle exec thin start -p 4567 开启一个本地端口
-iconv -f gbk -t utf8 real.csv > shipan_2013-07-31.utf8.csv
-iconv -f gbk -t utf8 2013-07-31.csv > 2013-07-31.utf8.csv
+iconv -f gbk -t utf8 real.csv > shipan_2013-08-01.utf8.csv
+iconv -f gbk -t utf8 2013-08-01.csv > 2013-08-01.utf8.csv
 
 淘汰长期不交易名单
 ~/rocket_finance/lib/finance$ vim importer.rb 最后一个方法out_ids = [] 放入长期不交易的名单
@@ -131,12 +131,13 @@ pv ~/rf_data/rf.20111205_20130603_all.20130603_nokline.dump | mysql -u root rock
 
 
 审核
-0LK108383通过审核，于2013-08-01参加复赛
-0LK110633通过审核，于2013-08-01参加复赛
-0LK115065通过审核，于2013-08-01参加复赛
-LK116298通过审核，于2013-08-01参加复赛
-0LK120563通过审核，于2013-08-01参加复赛
-0LK122756通过审核，于2013-08-01参加复赛
+LK100609通过审核，于2013-08-02参加复赛
+LK105224通过审核，于2013-08-02参加复赛
+LK107322通过审核，于2013-08-02参加复赛
+LK113504通过审核，于2013-08-02参加复赛
+LK116136通过审核，于2013-08-02参加复赛
+LK118708通过审核，于2013-08-02参加复赛
+LK125290通过审核，于2013-08-02参加复赛
 
 
 实盘
