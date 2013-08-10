@@ -15,12 +15,9 @@ lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
 交易日使用: 
 
 	TradingDay = "2013-08-09".
-  Reqs = [varieties, instruments, investors]. 
+  Reqs = [varieties, instruments, investors, settlements]. 
   rf_cheetah_sync:run(TradingDay, Reqs).
 
-  TradingDay = "2013-08-09".
-  Req2s = [settlements].
-  rf_cheetah_sync:run(TradingDay, Req2s).
   q().退出  重启一下 服务
 
   同步实时行情, 分钟K线
@@ -86,13 +83,13 @@ mysqldump -uroot rocket_finance --ignore-table=rocket_finance.equity_min_candles
 
 ------------------------------------------------------------------------------------
 计算单个用户的成绩
-insert into phases set investor_id = 8459, contest_id = 1, started_at = "2013-08-06 00:00:00",result = 1, init_capital = 500000;
-insert into participations set investor_id = 8459, contest_id = 1,phase_id = 95139;
-insert into contest_ranks set investor_id = 8459, contest_id = 1, phase_id = 95139, init_capital = 500000, max_init_capital = 500000, started_at = "2013-08-06 00:00:00";
-update investors set phase_id = 95139, contest_status = 1, next_launch_date = "2013-08-06 00:00:00" where id = 8459;
+insert into phases set investor_id = 8459, contest_id = 2, started_at = "2013-08-09 00:00:00",result = 1, init_capital = 500000;
+insert into participations set investor_id = 8459, contest_id = 2,phase_id = 95139;
+insert into contest_ranks set investor_id = 8459, contest_id = 2, phase_id = 95139, init_capital = 500000, max_init_capital = 500000, started_at = "2013-08-09 00:00:00";
+update investors set phase_id = 95139, contest_status = 2, next_launch_date = "2013-08-09 00:00:00" where id = 8459;
 
-TradingDay = "2013-08-07".
-OutId = 108543.
+TradingDay = "2013-08-09".
+OutId = 111359.
 rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
 ------------------------------------------------------------------------------------
 
