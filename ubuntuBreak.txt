@@ -16,8 +16,17 @@ $ sudo su
 # cd /
 
 下面是我用来备份系统的完整命令：
-# tar cvpzf backup.tgz –exclude=/proc –exclude=/lost+found –exclude=/backup.tgz –exclude=/mnt –exclude=/sys /
+# tar cvpzf /home/x/backup.tgz –exclude=/proc –exclude=/lost+found –exclude=/home/x/backup.tgz –exclude=/mnt –exclude=/sys /
+============================
+sudo tar -cvpzf /home/x/backup.tgz –exclude=/proc –exclude=/lost+found –exclude=/mnt –exclude=/sys –exclude=/media –exclude=/home/x/backup.tgz /
 
+ubuntu系统恢复：
+sudo tar -xvpzf /media/gpan/ubuntubak.tgz -C /
+
+当然备份，取决你的系统的大小，而时间不同，恢复也是一样，不过恢复完成后你还要记得，在你的新系统的根目录下建立哪几个被你排除了的文件夹哦。
+sudo mkdir /proc /lost+found /mnt /sys /media
+
+============================
 让我们来简单看一下这个命令：
 “tar”当然就是我们备份系统所使用的程序了。
 “cvpfz”是tar的选项，意思是“创建档案文件”、“保持权限”(保留所有东西原来的权限)、“使用gzip来减小文件尺寸”。
