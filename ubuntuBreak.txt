@@ -23,6 +23,18 @@ sudo tar -cvpzf /home/x/backup.tgz –exclude=/proc –exclude=/lost+found –ex
 ubuntu系统恢复：
 sudo tar -xvpzf /media/gpan/ubuntubak.tgz -C /
 
+来解释下这个命令：
+# ‘tar’ 是用来备份的程序
+# c – 新建一个备份文档
+# v – 详细模式， tar程序将在屏幕上实时输出所有信息。
+# p – 保存许可，并应用到所有文件。
+# z – 采用‘gzip’压缩备份文件，以减小备份文件体积。
+# f <filename> – 说明备份文件存放的路径， /media/gpan/ubuntubak.tgz 是本例子中备份文件名。（我之前用ntfs-config把一个硕大的windows分区挂在这里了名叫gpan)
+# 来看看我们想要包含的目录。我们不想备份所有的东西，因为有些目录是没有多大用处的。 我排除了/media　/proc /lost+found /mnt /sys /media是我在此例中尤其要排除的，不然就有大问题了，想想看备份文件往这里写，你还备份这里的东西？
+# 最後一个参数是我们想要保存的目录. 我们想要保存所有的东西，使用 / 作为根目录。
+＃x是告诉tar程序解压缩备份文件
+-C <directory> 参数是指定tar程序解压缩到的目录。 ( 在本例中是/ )
+
 当然备份，取决你的系统的大小，而时间不同，恢复也是一样，不过恢复完成后你还要记得，在你的新系统的根目录下建立哪几个被你排除了的文件夹哦。
 sudo mkdir /proc /lost+found /mnt /sys /media
 
