@@ -1,0 +1,5 @@
+{ text: '月份', dataIndex: 'months', flex: 2, renderer: function(value, meta){	
+          var months = value.split('=');	
+          meta.tdAttr = 'data-qtip="'+ months[0] +'"';	
+          return months[0];
+        }},
