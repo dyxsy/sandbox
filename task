@@ -42,8 +42,8 @@ root登陆 密码:root@lktz
 要先审核名单晋级才能初始化
 
 比赛成绩计算初始化 (缺用户操作日志)
-TradingDay = "2013-09-26".
-contest_initor:do_init(TradingDay).
+  TradingDay = "2013-09-26".
+  contest_initor:do_init(TradingDay).
 
 计算初赛，复赛成绩 (缺用户操作日志)
 rocket_finance_manager:calc_ranks(1, TradingDay).    % 计算模拟初赛成绩 > 7minutes
@@ -136,9 +136,9 @@ pv ~/rf_data/rf.20111205_20130603_all.20130603_nokline.dump | mysql -u root rock
 审核
 
 LK100656通过审核，于2013-09-27参加复赛
-LK101246通过审核，于2013-09-27参加复赛
-LK101361通过审核，于2013-09-27参加复赛
-LK104331通过审核，于2013-09-27参加复赛
+0LK101246通过审核，于2013-09-27参加复赛
+0LK101361通过审核，于2013-09-27参加复赛
+0LK104331通过审核，于2013-09-27参加复赛
 
 实盘
 LK119226,苏女士,上海,555378.93,1258.39,0.1107579
