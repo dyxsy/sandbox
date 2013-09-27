@@ -1,35 +1,72 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<title>rails_websocket 聊天室</title>
-	</head>
-	<script type="text/javascript" src="/assets/application.js"></script>
-	<script type="text/javascript">
-		var dispatcher = new WebSocketRails(window.location.href.substring(window.location.protocol.length) + '/websocket');
-		var channel = dispatcher.subscribe('subscribe_msg');
-		channel.bind('msg', function(msg) {
-		  document.getElementById("view").value = document.getElementById("view").value + msg[0] + " 发送于 " + msg[2] + "\n-------------------------------------\n" + msg[1] + "\n=====================================\n";
-		});
-		// dispatcher.bind('msg', function(msg) {
-	  //     document.getElementById("view").innerHTML = document.getElementById("view").innerHTML + msg + "</p>";
-	  //   });
-    function send(){
-    	var name = document.getElementById("name").value;
-    	if (name == "") {
-    		name = "匿名";
-    	};
-    	var messge = {
-				msg :  document.getElementById("msg").value,
-				name:  name
-			};
-    	dispatcher.trigger('websockets_rails.send_msgs', messge);
-    	document.getElementById("msg").value = "";
-    }
-	</script>
-	<body>
-		<div style="width: 400px;height:300px;background:rgb(218, 218, 218);" > 
-			<textarea readonly="readonly" style="width: 400px;height:300px;background:rgb(218, 218, 218);" id= "view"></textarea>
-		</div>
-		昵称:<input type="text" id="name" /><p>
-		消息:<input type="text" id="msg" /><input type="button" id = "btn" value = "send" onclick="send()" />
-	</body>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ExtTop - Desktop Sample App</title>
+
+    <link rel="stylesheet" type="text/css" href="/assets/desktop.css" />
+
+    <!-- GC -->
+
+    <!-- <x-compile> -->
+    <!-- <x-bootstrap> -->
+    <script type="text/javascript" src="/assets/application.js"></script>
+    <script type="text/javascript" src="/assets/ext-4.2.1/examples/shared/include-ext.js"></script>
+    <script type="text/javascript" src="/assets/ext-4.2.1/examples/shared/options-toolbar.js"></script>
+   
+
+    <!-- </x-bootstrap> -->
+    <script type="text/javascript">
+        Ext.Loader.setPath({
+            'Ext.ux.desktop': '/assets/chat/desktop/js',
+
+            MyDesktop: '/assets/chat/desktop'
+        });
+
+        Ext.require('MyDesktop.App');
+
+        var myDesktopApp;
+        Ext.onReady(function () {
+            myDesktopApp = new MyDesktop.App();
+        });
+
+        // console.log(window.location.href.substring(window.location.protocol.length))
+        var dispatcher = new WebSocketRails('localhost:5000/websocket');
+        var channel = dispatcher.subscribe('subscribe_msg');
+        channel.bind('msg', function(msg) {
+          document.getElementById("view").value = document.getElementById("view").value + msg[0] + " 发送于 " + msg[2] + "\n-------------------------------------\n" + msg[1] + "\n=====================================\n";
+        });
+        // dispatcher.bind('msg', function(msg) {
+      //     document.getElementById("view").innerHTML = document.getElementById("view").innerHTML + msg + "</p>";
+      //   });
+        function send(){
+            var name = document.getElementById("name").value;
+            if (name == "") {
+                name = "匿名";
+            };
+            var messge = {
+                msg :  document.getElementById("msg").value,
+                name:  name
+            };
+            dispatcher.trigger('websockets_rails.send_msgs', messge);
+            document.getElementById("msg").value = "";
+        }
+    </script>
+    <!-- </x-compile> -->
+    
+</head>
+
+<body>
+    
+    <div id="poweredby" target="_blank">
+        <div id="poweredby" style="width: 400px;height:300px;background:rgb(218, 218, 218);" > 
+            <textarea readonly="readonly" style="width: 400px;height:300px;background:rgb(218, 218, 218);" id= "view" ></textarea>
+        </div>
+        昵称:<input type="text" id="name" /><p>
+        消息:<input type="text" id="msg" /><input type="button" id = "btn" value = "send" onclick="send()"/>
+
+    </div>
+
+</body>
 </html>
