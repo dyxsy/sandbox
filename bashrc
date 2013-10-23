@@ -56,10 +56,32 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+find_git_branch () {
+    local dir=. head
+    until [ "$dir" -ef / ]; do
+        if [ -f "$dir/.git/HEAD" ]; then
+            head=$(< "$dir/.git/HEAD")
+            if [[ $head = ref:\ refs/heads/* ]]; then
+                git_branch=" *(${head#*/*/})"
+            elif [[ $head != '' ]]; then
+                git_branch=" *(detached)"
+            else
+                git_branch=" *(unknow)"
+            fi  
+            return
+        fi  
+        dir="../$dir"
+    done
+    git_branch=''
+}
+
+
+PROMPT_COMMAND="find_git_branch; $PROMPT_COMMAND"
+
 if [ "$color_prompt" = yes ]; then
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1="${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00;36m\]@\[\033[00;35m\]\h\[\033[00;36m\]:\[\033[00;34m\]\w\[\033[01;31m\]\$git_branch\[\033[00;36m\]\$ \[\033[0m\]"
 fi
 unset color_prompt force_color_prompt
 
@@ -114,28 +136,4 @@ if ! shopt -oq posix; then
 fi
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
-find_git_branch () {
-    local dir=. head
-    until [ "$dir" -ef / ]; do
-        if [ -f "$dir/.git/HEAD" ]; then
-            head=$(< "$dir/.git/HEAD")
-            if [[ $head = ref:\ refs/heads/* ]]; then
-                git_branch=" *(${head#*/*/})"
-            elif [[ $head != '' ]]; then
-                git_branch=" *(detached)"
-            else
-                git_branch=" *(unknow)"
-            fi  
-            return
-        fi  
-        dir="../$dir"
-    done
-    git_branch=''
-}
-
-
-PROMPT_COMMAND="find_git_branch; $PROMPT_COMMAND"
-PS1="\[\033[01;32m\]\u\[\033[00;36m\]@\[\033[00;35m\]\h\[\033[00;36m\]:\[\033[00;34m\]\w\[\033[01;31m\]\$git_branch\[\033[00;36m\]\$ \[\033[0m\]"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
-export XMODIFIERS="@im=fcitx"
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 
