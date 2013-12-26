@@ -14,23 +14,24 @@ lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
 同步数据
 同步合约，用户，成交记录和登录日志 (缺用户操作日志)
 
-交易日使用: 
+交易日使用: varieties, instruments, investors, 
 
-	TradingDay = "2013-11-08".
-  Reqs = [varieties, instruments, investors, settlements]. 
+	TradingDay = "2013-12-26".
+  Reqs = [varieties, instruments,investors, settlements].
   rf_cheetah_sync:run(TradingDay, Reqs).
+
 
   q().退出  重启一下 服务
 
   同步实时行情, 分钟K线
-  TradingDay = "2013-11-08".
+  TradingDay = "2013-12-26".
   Reqs2 = [varieties, instruments, candlesticks].
   %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
   rf_cheetah_sync:run(TradingDay, Reqs2).
   如果遇到timeout 要进入数据库 market 删除表candlesticks和表market_ticks 中 今天的数据
 
 非交易日使用: 
-  	TradingDay = "2013-11-09". 
+  	TradingDay = "2013-12-15". 
     rf_cheetah_sync:run(TradingDay, not_trading_day).  
 
 审核晋级用户
@@ -42,7 +43,7 @@ root登陆 密码:root@lktz
 要先审核名单晋级才能初始化
 
 比赛成绩计算初始化 (缺用户操作日志)
-  TradingDay = "2013-11-08".
+  TradingDay = "2013-12-26".
   contest_initor:do_init(TradingDay).
 
 计算初赛，复赛成绩 (缺用户操作日志)
@@ -56,9 +57,9 @@ rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
 计算不活跃用户
 rocket_finance_manager:count_inactive_days().
 
-计算单笔 (缺用户操作日志)
+计算单笔   (缺用户操作日志)
 
-TradingDay = "2013-10-13".
+TradingDay = "2013-12-12".
 
 rocket_finance_manager:analyze_investments(TradingDay).
 
@@ -66,14 +67,14 @@ rocket_finance_manager:analyze_investments(TradingDay).
 
 计算权益日K线 (缺用户操作日志)*
 
-  TradingDay = "2013-11-08".
+  TradingDay = "2013-12-26".
   equity_candlestick_manager:calculate(TradingDay).
 
 导入实盘成绩
 bundle exec thin start -p 4567 开启一个本地端口
 
-iconv -f gbk -t utf8 real.csv > shipan_2013-11-08.utf8.csv
-iconv -f gbk -t utf8 2013-11-08.csv > 2013-11-08.utf8.csv
+iconv -f gbk -t utf8 real.csv > shipan_2013-12-26.utf8.csv
+iconv -f gbk -t utf8 2013-12-26.csv > 2013-12-26.utf8.csv
 
 
 淘汰长期不交易名单
@@ -85,15 +86,15 @@ mysqldump -uroot rocket_finance --ignore-table=rocket_finance.equity_min_candles
 
 
 ------------------------------------------------------------------------------------
-LK116870 8月21号开始复赛。 id = 16648
+LK120891 8月21号开始复赛。 id = 20611
 计算单个用户的成绩 
-insert into phases set investor_id = 16648, contest_id = 2, started_at = "2013-08-21 00:00:00",result = 1, init_capital = 500000;
-insert into participations set investor_id = 16648, contest_id = 2,phase_id = 95282;
-insert into contest_ranks set investor_id = 16648, contest_id = 2, phase_id = 95282, init_capital = 500000, max_init_capital = 500000, started_at = "2013-08-21 00:00:00";
-update investors set phase_id = 95282, contest_status = 1, next_launch_date = "2013-08-21 00:00:00" where id = 16648;
+insert into phases set investor_id = 20611, contest_id = 1, started_at = "2013-12-25 00:00:00",result = 1, init_capital = 500000;
+insert into participations set investor_id = 20611, contest_id = 1,phase_id = 110464;
+insert into contest_ranks set investor_id = 20611, contest_id = 1, phase_id = 110464, init_capital = 500000, max_init_capital = 500000, started_at = "2013-12-25 00:00:00";
+update investors set phase_id = 110464, contest_status = 1, next_launch_date = "2013-12-25 00:00:00" where id = 20611;
 
-TradingDay = "2013-08-21".
-OutId = 116870.
+TradingDay = "2013-12-25".
+OutId = 120891.
 rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
 ------------------------------------------------------------------------------------
 
@@ -128,112 +129,73 @@ select id from reviews where investor_id = 3377;
 update reviews set next_launch_date = "2013-08-15 00:00:00",reviewed_at = now(),status=1,comment = "于2013-08-15参加复赛" where id in(1608, 1609,1610,1611,1612);
 
 ===============恢复数据=================
-pv ~/rf_data/rf.20111205_20130603_all.20130603_nokline.dump | mysql -u root rocket_finance
+pv ~/rf_data/rf.20131211_20130603_all.20130603_nokline.dump | mysql -u root rocket_finance
 
 ========================================
 
 
 审核
-LK101778通过审核，于2013-11-11参加复赛
-LK136871通过审核，于2013-11-11参加复赛
+
 
 实盘
-LK100891,殷先生,湖南,556688.07,-1048.56,0.1133761
-LK119226,苏女士,上海,535924.85,-574.00,0.0718497
-LK101186,于先生,山东,520440.41,0.00,0.0408808
-LK106115,林先生,福建,520254.53,-152.04,0.0405091
-LK111574,张先生,福建,516781.23,-2644.10,0.0335625
-LK113354,丰先生,辽宁,512831.61,974.01,0.0256632
-LK100433,祝女士,江西,512393.21,12393.21,0.0247864
-LK101000,王先生,河南,511665.03,382.79,0.0233301
-LK119833,潘先生,广东,502157.44,4093.77,0.0043149
-LK118983,李先生,广东,500000.00,0.00,0.0000000
-LK101378,李先生,天津,498187.43,-6437.79,-0.0036251
-LK120891,张先生,江苏,497283.10,-6945.00,-0.0054338
-LK111340,夏先生,江西,487255.61,19841.93,-0.0254888
-LK102120,陈先生,浙江,484981.49,-2745.91,-0.0300370
-LK105888,薛先生,上海,483487.01,0.00,-0.0330260
-LK104021,李先生,河南,482607.35,0.00,-0.0347853
-LK100068,姜先生,北京,473842.61,-40924.31,-0.0523148
-LK100566,李先生,广东,463163.76,0.00,-0.0736725
-LK123464,朱先生,甘肃,463034.41,0.00,-0.0739312
-LK120649,颜先生,重庆,462987.24,368.64,-0.0740255
-LK111230,冯先生,辽宁,456623.37,-5436.58,-0.0867533
-LK119240,谢先生,天津,449994.84,-343.46,-0.1000103,淘汰
+
 
 初赛
 长时间不交易
-LK101321
-LK107908
-LK121651
-LK124618
-LK126672
-LK128375
-LK128800
-LK129860
-LK130690
-LK131231
-LK134185
-LK134995
-LK135119
-LK135126
-LK135330
-LK135609
-LK135792
-LK135843
-LK136004
-19
+
 晋级
-LK100485
-LK103454
-LK104664
-LK105647
-LK111545
-LK113104
-LK134598
-7
+
+
+
 淘汰
 
 
 rails runner lib/finance/importer.rb
-总淘汰共84 一共4034
+总淘汰共 一共
 
 
 复赛
 长时间不交易
 
+
 淘汰
-LK100937
-LK124149
-LK132091
+
 
 
 晋级
 
 
 
-总淘汰共 一共149
+总淘汰共 一共
 
 select * from contest_ranks where  investor_id = 2674;
 
 少人
 
-c = ContestRank.select("investor_id").where(:trading_day => "2013-09-13 00:00:00",:contest_id => 2)
+c = ContestRank.select("investor_id").where(:trading_day => "2013-12-13 00:00:00",:contest_id => 1)
 investor_ids = c.collect{|x| x.investor_id.to_i}
 
-aa = Investor.select('out_id').where("id in  (2674, 2844)")
+aa = Investor.select('out_id').where(:id => investor_ids)
 
 
 outIds_ids = c.collect{|x| x.investor_id.to_i}
 
-LK100219通过审核，于2013-11-08参加复赛 id = 237
+LK111340通过审核，于2013-12-23参加复赛 id = 11208
 
-update investors set contest_id = 2, 
+update investors set contest_id = 1, 
 contest_status = 1, 
 launch_init_cap = 500000, 
-next_launch_date = "2013-11-08 00:00:00" where id = 237;
+next_launch_date = "2013-12-23 00:00:00" where id = 11208;
 
 
-
+LK102167   2183
+LK104049  4043
+LK110666  10545
+LK112169  12024
+LK112667  12516
+LK112902  12746
+LK116283  16063
+LK119733  19463
+LK129271  29946
 
 select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
