@@ -170,3 +170,12 @@ explain
 
 多头:看涨买入
 空头:看跌卖出
+
+
+  def exchange_name_label
+    str = self.exchange_name
+    m = str.match(/\p{Han}*\d*\p{Han}*/).to_s
+    m = str.match(/\p{Han}*/).to_s if m.present?
+    m = str.match(/[A-Za-z]*/).to_s if m.present?
+    puts m
+  end
