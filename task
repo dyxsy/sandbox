@@ -1,274 +1,209 @@
-{auth_server, {"115.239.230.68", 8880} }
+  {auth_server, {"115.239.230.68", 8880} }
 
-rocket_finance
-在 screen -x 11115.import 中开启或停止服务,和备份数据库
-比赛成绩处理流程
+  rocket_finance
+  在 screen -x 11115.import 中开启或停止服务,和备份数据库
+  比赛成绩处理流程
+  god start thin-rocket_finance
+  god stop thin-rocket_finance
+  ----------------------------------------------------------------------------------------------------------------------------
+  计算全部人成绩
+  进入screen进行操作，有日志可以查看
+  screen -x rocket_finance
 
-----------------------------------------------------------------------------------------------------------------------------
-计算全部人成绩
-进入screen进行操作，有日志可以查看
-screen -x rocket_finance
+  lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
 
-lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
+  同步数据
+  同步合约，用户，成交记录和登录日志 (缺用户操作日志)
 
-同步数据
-同步合约，用户，成交记录和登录日志 (缺用户操作日志)
+  交易日使用: varieties, instruments, investors, 
 
-交易日使用: varieties, instruments, investors, 
-
-	TradingDay = "2013-12-31".
-  Reqs = [varieties, instruments,investors, settlements].
-  rf_cheetah_sync:run(TradingDay, Reqs).
-
-
-  q().退出  重启一下 服务
-
-  同步实时行情, 分钟K线
-  TradingDay = "2013-12-31".
-  Reqs2 = [varieties, instruments, candlesticks].
-  %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
-  rf_cheetah_sync:run(TradingDay, Reqs2).
-  如果遇到timeout 要进入数据库 market 删除表candlesticks和表market_ticks 中 今天的数据
-
-非交易日使用: 
-  	TradingDay = "2013-12-29". 
-    rf_cheetah_sync:run(TradingDay, not_trading_day).  
-
-审核晋级用户
-bundle exec thin start -p 4567 开启一个本地端口
-root登陆 密码:root@lktz
- 
-导入新参赛选手名单 // 一个月一次 月初
-
-要先审核名单晋级才能初始化
-
-比赛成绩计算初始化 (缺用户操作日志)
-  TradingDay = "2013-12-31".
-  contest_initor:do_init(TradingDay).
-
-计算初赛，复赛成绩 (缺用户操作日志)
-rocket_finance_manager:calc_ranks(1, TradingDay).    % 计算模拟初赛成绩 > 7minutes
-rocket_finance_manager:calc_ranks(2, TradingDay).    % 计算模拟复赛成绩 < 1minutes
-
-统计初赛、复赛 比赛统计数据 (缺用户操作日志)
-rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
-rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
-
-计算不活跃用户
-rocket_finance_manager:count_inactive_days().
-
-计算单笔   (缺用户操作日志)
-
-TradingDay = "2013-12-12".
-
-rocket_finance_manager:analyze_investments(TradingDay).
-
-搬行情
-
-计算权益日K线 (缺用户操作日志)*
-
-  TradingDay = "2013-12-31".
-  equity_candlestick_manager:calculate(TradingDay).
-
-导入实盘成绩
-bundle exec thin start -p 4567 开启一个本地端口
-
-iconv -f gbk -t utf8 real.csv > shipan_2013-12-31.utf8.csv
-iconv -f gbk -t utf8 2013-12-31.csv > 2013-12-31.utf8.csv
+  	TradingDay = "2014-02-18".
+    Reqs = [varieties, instruments,investors, settlements].
+    rf_cheetah_sync:run(TradingDay, Reqs).
 
 
-淘汰长期不交易名单
-~/rocket_finance/lib/finance$ vim importer.rb 最后一个方法out_ids = [] 放入长期不交易的名单
-rails runner lib/finance/importer.rb
-数据备份*
-mysqldump -uroot rocket_finance --ignore-table=rocket_finance.equity_min_candlesticks  > ~/rf_data/rf.20111205_20130822_all.20130822_nokline.dump
-----------------------------------------------------------------------------------------------------------------------------
+    q().退出  重启一下 服务
+
+    同步实时行情, 分钟K线
+    TradingDay = "2014-02-18".
+    Reqs2 = [varieties, instruments, candlesticks].
+    %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
+    rf_cheetah_sync:run(TradingDay, Reqs2). 
+    如果遇到timeout 要进入数据库 market 删除表candlesticks和表market_ticks 中 今天的数据
+
+  非交易日使用: 
+    	TradingDay = "2014-02-09". 
+      rf_cheetah_sync:run(TradingDay, not_trading_day).
+
+  审核晋级用户
+  bundle exec thin start -p 4567 开启一个本地端口
+  root登陆 密码:root@lktz
+   
+  导入新参赛选手名单 // 一个月一次 月初
+
+  要先审核名单晋级才能初始化
+
+  比赛成绩计算初始化 (缺用户操作日志)
+    TradingDay = "2014-02-18".
+    contest_initor:do_init(TradingDay).
+
+  计算初赛，复赛成绩 (缺用户操作日志)
+  rocket_finance_manager:calc_ranks(1, TradingDay).    % 计算模拟初赛成绩 > 7minutes
+  rocket_finance_manager:calc_ranks(2, TradingDay).    % 计算模拟复赛成绩 < 1minutes
+
+  统计初赛、复赛 比赛统计数据 (缺用户操作日志)
+  rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
+  rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
+
+  计算不活跃用户
+  rocket_finance_manager:count_inactive_days().
+
+  计算单笔   (缺用户操作日志)
+
+  %TradingDay = "2014-12-12".
+
+  %rocket_finance_manager:analyze_investments(TradingDay).
+
+  搬行情
+
+  计算权益日K线 (缺用户操作日志)*
+
+    TradingDay = "2014-02-18".
+    equity_candlestick_manager:calculate(TradingDay).
+
+  导入实盘成绩
+  bundle exec thin start -p 4567 开启一个本地端口
+
+  iconv -f gbk -t utf8 real.csv > shipan_2014-02-18.utf8.csv
+  iconv -f gbk -t utf8 2014-02-18.csv > 2014-02-18.utf8.csv
 
 
-------------------------------------------------------------------------------------
-LK120891 8月21号开始复赛。 id = 20611
-计算单个用户的成绩 
-insert into phases set investor_id = 767, contest_id = 1, started_at = "2013-12-25 00:00:00",result = 1, init_capital = 500000;
-insert into participations set investor_id = 767, contest_id = 1,phase_id = 110464;
-insert into contest_ranks set investor_id = 767, contest_id = 1, phase_id = 110464, init_capital = 500000, max_init_capital = 500000, started_at = "2013-12-25 00:00:00";
-update investors set phase_id = 110464, contest_status = 1, next_launch_date = "2013-12-25 00:00:00" where id = 767;
-
-TradingDay = "2013-12-27".
-OutId = 122754.
-rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
-------------------------------------------------------------------------------------
-
-./rebar generate skeleton=otp.start-dev to=./ebin/  
-
-erl_cheetah_admin:login("ninja", "ninja@admin", [investors, varieties]).
-erl_cheetah_admin:login("rocketfinance", "rocketfinance@lk", [monitor_groups]).
-erl_cheetah_admin:login().
-
-find_pre_trades(ConnPool, InvestorId, InstrumentId, TradingDay) ->
-    SQL = list_to_binary(["select * from trades where investor_id = ? and instrument_id = ? and trading_day < ? and investment_id is null and trading_day > ? order by trade_time_ts asc"]),
-    Result = emysql:execute(ConnPool, SQL, [InvestorId, InstrumentId, TradingDay, "2012-11-22"]),
-    emysql_util:as_record(Result, trade, record_info(fields, trade)).
-
-------------------------------------------------------------------------------------------------------------
-配置测试行情
-restart 9275.vmarket 项目
-
-market_collector:clear_rt_market().
-
-market_collector:toggle_debug_rt_market().
-
-vmatch_signal_broadcaster ! {<<"if">>, trading}.
+  淘汰长期不交易名单
+  ~/rocket_finance/lib/finance$ vim importer.rb 最后一个方法out_ids = [] 放入长期不交易的名单
+  rails runner lib/finance/importer.rb
+  数据备份*
+  mysqldump -uroot rocket_finance --ignore-table=rocket_finance.equity_min_candlesticks  > ~/rf_data/rf.20111205_20140108_all.20140108_nokline.dump
+  ----------------------------------------------------------------------------------------------------------------------------
 
 
-==================比赛审核======================
-update investors set contest_id = 2, contest_status = 2, comment = "于2013年12月30日参加复赛",next_launch_date = "2013-12-30 00:00:00", launch_init_cap = 500000 where out_id in(104049);
+  ------------------------------------------------------------------------------------
+  计算单个用户的成绩 
 
-select id from investors where out_id in(104049);
-注:LK118381 没有执行一下步骤,原因reviews中没有他的记录
-select id from reviews where investor_id = 4043;
-update reviews set next_launch_date = "2013-12-30 00:00:00",reviewed_at = now(),status=1,comment = "于2013年12月30日参加复赛" where id in(2024);
+  insert into phases set investor_id = (select id from investors where out_id = 136601), contest_id = 2, started_at = "2014-01-22 00:00:00",result = 1, init_capital = 500000;
 
-===============恢复数据=================
-pv ~/rf_data/rf.20131211_20130603_all.20130603_nokline.dump | mysql -u root rocket_finance
+  insert into participations set investor_id = (select id from investors where out_id = 136601), contest_id = 2,phase_id = (select id from phases where investor_id = (select id from investors where out_id = 136601) and contest_id = 2 and started_at = "2014-01-22 00:00:00");
 
-========================================
+  insert into contest_ranks set investor_id = (select id from investors where out_id = 136601), contest_id = 2, phase_id = (select id from phases where investor_id = (select id from investors where out_id = 136601) and contest_id = 2 and started_at = "2014-01-22 00:00:00"), init_capital = 500000, max_init_capital = 500000, started_at = "2014-01-22 00:00:00";
 
+  update investors set phase_id = 114506, contest_status = 1, next_launch_date = "2014-01-22 00:00:00" where id = 37108;
 
-审核
-0LK108003通过审核，于2013-12-31参加复赛   7923
-0LK108280通过审核，于2013-12-31参加复赛   8198
-0LK129636通过审核，于2013-12-31参加复赛   30299
-0LK136485通过审核，于2013-12-31参加复赛   36981
+  TradingDay = "2014-02-17".
+  OutId = 136513.
+  rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
+  ------------------------------------------------------------------------------------
 
+  ./rebar generate skeleton=otp.start-dev to=./ebin/  
 
-LK101893通过审核，于2014-01-02参加复赛
-LK104350通过审核，于2014-01-02参加复赛
-LK106503通过审核，于2014-01-02参加复赛
-LK108323通过审核，于2014-01-02参加复赛
-实盘
+  erl_cheetah_admin:login("ninja", "ninja@admin", [investors, varieties]).
+  erl_cheetah_admin:login("rocketfinance", "rocketfinance@lk", [monitor_groups]).
+  erl_cheetah_admin:login().
 
+  find_pre_trades(ConnPool, InvestorId, InstrumentId, TradingDay) ->
+      SQL = list_to_binary(["select * from trades where investor_id = ? and instrument_id = ? and trading_day < ? and investment_id is null and trading_day > ? order by trade_time_ts asc"]),
+      Result = emysql:execute(ConnPool, SQL, [InvestorId, InstrumentId, TradingDay, "2012-11-22"]),
+      emysql_util:as_record(Result, trade, record_info(fields, trade)).
 
-初赛
-长时间不交易
-LK104583
-LK104740
-LK105506
-LK105866
-LK107419
-LK108278
-LK109240
-LK109280
-LK109688
-LK114569
-LK117800
-LK128471
-LK129947
-LK130453
-LK130581
-LK131169
-LK132634
-LK133558
-LK134088
-LK134498
-LK134731
-LK135913
-LK136005
-LK136634
-LK136894
-LK136949
-LK136963
-27
+  ------------------------------------------------------------------------------------------------------------
+  配置测试行情
+  restart 9275.vmarket 项目
 
-晋级
-LK100169
-LK102402
-LK109156
-LK126551
-LK126994
-LK132022
-LK136512
-7
+  market_collector:clear_rt_market().
 
-淘汰
+  market_collector:toggle_debug_rt_market().
+
+  vmatch_signal_broadcaster ! {<<"if">>, trading}.
 
 
-rails runner lib/finance/importer.rb
-总淘汰共191 一共3913
+  ==================比赛审核======================
+  update investors set contest_id = 2, contest_status = 2, comment = "于2013年12月30日参加复赛",next_launch_date = "2013-12-30 00:00:00", launch_init_cap = 500000 where out_id in(104049);
+
+  select id from investors where out_id in(104049);
+  注:LK118381 没有执行一下步骤,原因reviews中没有他的记录
+  select id from reviews where investor_id = 4043;
+  update reviews set next_launch_date = "2013-12-30 00:00:00",reviewed_at = now(),status=1,comment = "于2013年12月30日参加复赛" where id in(2024);
+
+  ===============恢复数据=================
+  pv ~/rf_data/rf.20131211_20130603_all.20130603_nokline.dump | mysql -u root rocket_finance
+
+  ========================================
 
 
-复赛
+  审核
+LK128836通过审核，于2014-02-19参加复赛
+LK122450通过审核，于2014-02-19参加复赛
+LK124438通过审核，于2014-02-19参加复赛
+LK124211通过审核，于2014-02-19参加复赛
+LK106941通过审核，于2014-02-19参加复赛
+LK109054通过审核，于2014-02-19参加复赛
+LK112322通过审核，于2014-02-19参加复赛
+  实盘
+
+
+  初赛
+  长时间不交易
+
+
+  晋级
+LK100289
+LK101491
+LK104709
+LK119508
+LK120719
+
+
+  淘汰
+
+
+  rails runner lib/finance/importer.rb
+  总淘汰共128 一共6830
+
+
+  复赛
 长时间不交易
 
+  淘汰
 
-淘汰
-LK103427
-LK113744
-LK124160
-  
+LK102694
+LK108155
+LK119733
 
-
-晋级
-
-总淘汰共 一共135
-
-select * from contest_ranks where  investor_id = 2674;
-
-少人
-
-c = ContestRank.select("investor_id").where(:trading_day => "2013-12-13 00:00:00",:contest_id => 1)
-investor_ids = c.collect{|x| x.investor_id.to_i}
-
-aa = Investor.select('out_id').where(:id => investor_ids)
+  晋级
 
 
-outIds_ids = c.collect{|x| x.investor_id.to_i}
+  总淘汰    共 142
 
-LK111340通过审核，于2013-12-23参加复赛 id = 11208
+  select * from contest_ranks where  investor_id = 2674;
 
-update investors set contest_id = 2, 
-contest_status = 1, 
-launch_init_cap = 500000, 
-next_launch_date = "2013-12-27 00:00:00" where id = 29946;
+  少人
 
-%LK104049  4043
-LK102167  2183
+  c = ContestRank.select("investor_id").where(:trading_day => "2013-12-13 00:00:00",:contest_id => 1)
+  investor_ids = c.collect{|x| x.investor_id.to_i}
 
-LK110666  10545
-LK112169  12024
-LK112667  12516
-LK112902  12746
-LK116283  16063
-LK119733  19463
-LK129271  29946
-
-select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
+  aa = Investor.select('out_id').where(:id => investor_ids)
 
 
-复赛  LK100750  516373.13 492041.24 516373.13 24331.89  0 0 100745.04 464735.82 4
-复赛  LK100864  611215.01 547490.31 527472.47 -20017.84 0 0 136991.67 474725.22 48
-复赛  LK100871  508806.51 479892.8  491989.44 12096.64  0 0 123032.06 450000  10
-复赛  LK100931  525190.55 472244.78 472805.9  561.12  0 0 139574.88 450000  43
-复赛  LK101016  511420.99 510672.59 511420.99 748.4 0 0 102451.31 460278.89 11
-复赛  LK101103  544482.86 520120.09 526790.44 6670.35 0 0 83059.34  474111.4  173
-复赛  LK101104  570579.54 543945.88 543945.88 0 0 0 80697.93  489551.29 95
-复赛  LK101114  519399.8  490150.07 495410.9  5260.83 0 0 122310.63 450000  14
-复赛  LK101192  500000  465319.18 465319.18 0 0 0 144016.5  450000  93
-复赛  LK101201  565183.63 564374.42 565183.63 809.21  0 0 67408.18  508665.27 2
+  outIds_ids = c.collect{|x| x.investor_id.to_i}
 
 
-初赛  LK121522  547649.34 547649.34 545844.76 -1804.58  0 0 97305.79  491260.28 14
-初赛  LK121537  500000  465148.37 465148.37 0 0 0 138944.27 450000  60
-初赛  LK121540  515212.15 515212.15 488120.81 -27091.34 0 0 152010.38 450000  14
-初赛  LK121581  512977.45 512977.45 512977.45 0 0 0 96197.19  461679.71 102
-初赛  LK121624  500000  500000  500000  0 0 0 100000  450000  14
-初赛  LK121644  531467.86 530646.73 530646.73 0 0 0 80721.39  477582.06 102
-初赛  LK121646  505465.81 505465.81 505465.81 0 0 0 98531.59  454919.23 79
-初赛  LK121661  550070.88 492151.25 492151.25 0 0 0 157991.52 450000  14
-初赛  LK121681  566207.84 509767.9  525875.4  16107.5 0 0 108702.51 473287.86 102
-初赛  LK121692  615117.37 581916.46 593486.18 11569.72  0 0 41894.52  534137.56 142
-初赛  LK121738  503415.58 503415.58 503415.58 0 0 0 101650.8  453074.02 102
-初赛  LK121746  500000  499419.2  499419.2  0 0 0 101410.53 450000  14
-初赛  LK121754  511258.81 503412.48 503412.48 0 0 0 124698.54 453071.23 79
-初赛  LK121770  508828.35 506091.45 506091.45 0 0 0 99557.66  455482.3  14
-初赛  LK121780  500000  500000  500000  0 0 0 100000  450000  14
+
+  LK101853通过审核，于2013-12-23参加复赛 id = 11208
+
+  update investors set contest_id = 1, 
+  contest_status = 1, 
+  launch_init_cap = 500000, 
+  next_launch_date = "2014-01-22 00:00:00" where id = 6469;
+
+  select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
+
+
 
