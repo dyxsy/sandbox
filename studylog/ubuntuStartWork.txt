@@ -1,0 +1,100 @@
+git@github.com:dyxsy/sandbox.git
+{auth_server, {"115.239.230.68", 8880} } 绍兴
+
+./rebar get-deps compile
+./rebar generate skeleton=otp.start-dev
+./ebin/start-dev.sh
+
+
+设置locale
+
+编辑/var/lib/locales/supported.d/local 在其中加入你要的locale
+
+en_US.UTF-8 UTF-8
+
+zh_CN.UTF-8 UTF-8
+
+zh_CN.GB18030 GB18030
+
+zh_CN.GBK GBK
+
+然后重新生成locale
+
+$sudo locale-gen
+
+===================
+sudo apt-get install curl
+\curl -L https://get.rvm.io | bash -s stable
+source ~/.rvm/scripts/rvm
+rvm requirements
+rvm pkg install openssl
+
+rvm pkg install readline
+rvm pkg install readline --verify-downloads 1
+
+sudo apt-get --no-install-recommends install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev libgdbm-dev ncurses-dev automake libtool bison subversion pkg-config libffi-dev
+rvm install 1.9.3
+rvm use 1.9.3 --default
+rvm rubygems current
+=======================
+gem sources --remove https://rubygems.org/ 
+gem sources -a http://ruby.taobao.org/ 
+gem sources -l
+
+gem install rails
+=======================
+find_git_branch () {
+    local dir=. head
+    until [ "$dir" -ef / ]; do
+        if [ -f "$dir/.git/HEAD" ]; then
+            head=$(< "$dir/.git/HEAD")
+            if [[ $head = ref:\ refs/heads/* ]]; then
+                git_branch=" *(${head#*/*/})"
+            elif [[ $head != '' ]]; then
+                git_branch=" *(detached)"
+            else
+                git_branch=" *(unknow)"
+            fi  
+            return
+        fi  
+        dir="../$dir"
+    done
+    git_branch=''
+}
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+
+PROMPT_COMMAND="find_git_branch; $PROMPT_COMMAND"
+PS1="\[\033[01;32m\]\u\[\033[00;36m\]@\[\033[00;35m\]\h\[\033[00;36m\]:\[\033[00;34m\]\w\[\033[01;31m\]\$git_branch\[\033[00;36m\]\$ \[\033[0m\]"
+============================
+sudo aptitude install curl
+sudo aptitude install zlib1g-dev
+sudo aptitude install build-essential automake autoconf
+sudo aptitude install bison
+sudo aptitude install git-core
+sudo aptitude install dh-autoreconf
+sudo aptitude install libreadline-dev
+sudo aptitude install libmysqlclient-dev libmysqld-dev
+sudo aptitude install mysql-server-5.5 mysql-client-5.5
+sudo aptitude install memcached
+sudo aptitude install libmemcache-dev libmemcached-dev
+sudo aptitude install libmagick-dev libmagickcore-dev libmagickwand-dev
+sudo aptitude install spidermonkey-bin
+apt-get install chromium-browser chromium-browser-l10n
+============================
+1、安装搜狗(fcitx)输入法
+ubuntu默认输入法为ibus，但更多人喜欢用fcitx，尤其是现在fcitx搭载了搜狗词库和皮肤，使用起来更加方便。
+安装fcitx之前先卸载ibus：
+
+$ killall ibus-daemon
+$ sudo apt-get purge ibus ibus-gtk ibus-gtk3 ibus-pinyin* ibus-sunpinyin ibus-table python-ibus
+
+$ rm -rf ~/.config/ibus
+
+使用以下命令安装搜狗输入法：
+
+$ sudo add-apt-repository ppa:fcitx-team/nightly
+
+$ sudo apt-get update
+
+$ sudo apt-get install fcitx-sogoupinyin

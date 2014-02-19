@@ -1,2 +1,0 @@
-class WebsocketsController < ApplicationController
-end
