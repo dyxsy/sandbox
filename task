@@ -17,7 +17,7 @@
 
   交易日使用: varieties, instruments, investors, 
 
-  	TradingDay = "2014-02-18".
+  	TradingDay = "2014-02-27".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
@@ -25,7 +25,7 @@
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-02-18".
+    TradingDay = "2014-02-27".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2). 
@@ -44,7 +44,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-02-18".
+    TradingDay = "2014-02-27".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -68,14 +68,14 @@
 
   计算权益日K线 (缺用户操作日志)*
 
-    TradingDay = "2014-02-18".
+    TradingDay = "2014-02-27".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-02-18.utf8.csv
-  iconv -f gbk -t utf8 2014-02-18.csv > 2014-02-18.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-02-27.utf8.csv
+  iconv -f gbk -t utf8 2014-02-27.csv > 2014-02-27.utf8.csv
 
 
   淘汰长期不交易名单
@@ -97,8 +97,8 @@
 
   update investors set phase_id = 114506, contest_status = 1, next_launch_date = "2014-01-22 00:00:00" where id = 37108;
 
-  TradingDay = "2014-02-17".
-  OutId = 136513.
+  TradingDay = "2014-02-26".
+  OutId = 120719.
   rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
   ------------------------------------------------------------------------------------
 
@@ -139,13 +139,8 @@
 
 
   审核
-LK128836通过审核，于2014-02-19参加复赛
-LK122450通过审核，于2014-02-19参加复赛
-LK124438通过审核，于2014-02-19参加复赛
-LK124211通过审核，于2014-02-19参加复赛
-LK106941通过审核，于2014-02-19参加复赛
-LK109054通过审核，于2014-02-19参加复赛
-LK112322通过审核，于2014-02-19参加复赛
+LK108032通过审核，于2014-02-28参加复赛
+LK128930通过审核，于2014-02-28参加复赛
   实盘
 
 
@@ -154,18 +149,12 @@ LK112322通过审核，于2014-02-19参加复赛
 
 
   晋级
-LK100289
-LK101491
-LK104709
-LK119508
-LK120719
-
-
+LK116409
   淘汰
 
 
   rails runner lib/finance/importer.rb
-  总淘汰共128 一共6830
+  总淘汰共304 一共6076
 
 
   复赛
@@ -173,14 +162,11 @@ LK120719
 
   淘汰
 
-LK102694
-LK108155
-LK119733
 
   晋级
 
 
-  总淘汰    共 142
+  总淘汰    共 143
 
   select * from contest_ranks where  investor_id = 2674;
 
@@ -198,12 +184,13 @@ LK119733
 
   LK101853通过审核，于2013-12-23参加复赛 id = 11208
 
-  update investors set contest_id = 1, 
+  update investors set contest_id = 2, 
   contest_status = 1, 
   launch_init_cap = 500000, 
-  next_launch_date = "2014-01-22 00:00:00" where id = 6469;
+  next_launch_date = "2014-02-26 00:00:00" where out_id in (104709,119508,120719);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
+
 
 
 
