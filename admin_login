@@ -1,0 +1,770 @@
+%%%-------------------------------------------------------------------
+%%% @author Jack Tang <jack@taodinet.com>
+%%% @copyright (C) 2013, Jack Tang
+%%% @doc
+%%%
+%%% @end
+%%% Created : 25 Nov 2013 by Jack Tang <jack@taodinet.com>
+%%%-------------------------------------------------------------------
+-module(admin_login_manager).
+
+-behaviour(gen_server).
+
+%% API
+-export([login/3,
+         logout/2]).
+
+-export([web_login/3,
+         web_logout/2]).
+
+-export([request/2]).
+
+-export([start/1,
+         start_link/2]).
+
+%% gen_server callbacks
+-export([init/1,
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2,
+         terminate/2,
+         code_change/3]).
+
+-define(SERVER, ?MODULE).
+
+-include_lib("shared/include/packet.hrl").
+-include("ninja.hrl").
+
+-record(state, {
+          login,
+          init_session_id,
+          login_refs,
+          init_fun,
+          from,
+          admin_id,
+          requests,
+          processes,
+          conn_pool,
+          req_id_pool,
+          req_callback_dict,
+          token,
+          tid,
+          uid,
+          market_stream_end}).
+
+%%%===================================================================
+%%% API
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Starts the server
+%%
+%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
+%% @end
+%%--------------------------------------------------------------------
+login(Login, Password, SessionId) ->
+    InitFun = fun() ->
+                  Requests = [],
+                  request(Login, Requests)
+              end,
+    login(Login, Password, SessionId, InitFun).
+
+login(Login, Password, SessionId, InitFun)->
+    NLogin = type_utils:any_to_list(Login),
+    NPassword = type_utils:any_to_list(Password),
+    NSessionId = type_utils:any_to_list(SessionId),
+    case start(NLogin) of
+        {ok, Pid} ->
+            gen_server:call(Pid, {do_login, NLogin, NPassword, NSessionId, InitFun}, 20000);
+        {error, Reason} ->
+            lager:error("[Admin:~p] Login failed: ~p", [NLogin, Reason])
+    end.
+
+logout(Login, SessionId) ->
+    NLogin = type_utils:any_to_list(Login),
+    NSessionId = type_utils:any_to_list(SessionId),
+    PName = ninja_process_name:admin_login_manager(Login),
+    gen_server:call(PName, {do_logout, NLogin, NSessionId}).
+
+%%--------------------------------------------------------------------
+web_login(Login, Password, SessionId) ->
+    InitFun = fun() ->
+                  Requests = [%instruments,
+                              %products,
+                              %investors,
+                              market_ticks,
+                              admin_investors,
+                              groups,
+                              adminships,
+                              monitor_groups],
+                  request(Login, Requests)
+              end,
+    login(Login, Password, SessionId, InitFun).
+
+web_logout(Login, SessionId) ->
+    logout(Login, SessionId).
+
+%%--------------------------------------------------------------------
+request(Login, Requests) ->
+    NewRequests = [type_utils:any_to_atom(R) || R <- Requests],
+    PName = ninja_process_name:admin_login_manager(Login),
+    gen_server:cast(PName, {request, NewRequests}).
+
+%%--------------------------------------------------------------------
+start(Login) ->
+    case supervisor:start_child(admin_login_manager_sup, [Login]) of
+        {ok, Pid}                        -> {ok, Pid};
+        {ok, Pid, _Info}                 -> {ok, Pid};
+        {error, {already_started, Pid} } -> {ok, Pid};
+        {error, Reason}                  -> {error, Reason}
+    end.
+
+start_link(ConnPool, Login) ->
+    PName = ninja_process_name:admin_login_manager(Login),
+    gen_server:start_link({local, PName}, ?MODULE, [ConnPool, Login], []).
+
+%%%===================================================================
+%%% gen_server callbacks
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Initiates the server
+%%
+%% @spec init(Args) -> {ok, State} |
+%%                     {ok, State, Timeout} |
+%%                     ignore |
+%%                     {stop, Reason}
+%% @end
+%%--------------------------------------------------------------------
+init([ConnPool, Login]) ->
+    {ok, _} = admin_net_backbone:start(Login),
+    {ok, #state{login             = Login,
+                requests          = [],
+                processes         = orddict:new(),
+                conn_pool         = ConnPool,
+                login_refs        = sets:new(),
+                req_id_pool       = orddict:new(),
+                req_callback_dict = orddict:new()}}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling call messages
+%%
+%% @spec handle_call(Request, From, State) ->
+%%                                   {reply, Reply, State} |
+%%                                   {reply, Reply, State, Timeout} |
+%%                                   {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, Reply, State} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_call({do_login, Login, Password, SessionId, InitFun}, From, #state{}=State) ->
+    IsLoginState = admin_net_backbone:is_login_state(Login, Password),
+    case IsLoginState of
+        {error, _} ->
+            admin_net_backbone:send(Login, [?LOGIN, self(), [Login, Password]]),
+            {noreply, State#state{from            = From,
+                                  init_fun        = InitFun,
+                                  init_session_id = SessionId}};
+        {ok, _, [AdminId, UId, Token]} ->
+            lager:info("[Admin:~p] logged-in", [Login]),
+            ws_msg_router:pub_to_admin(AdminId, {notification, dup_session}), %% 一个柜员帐号不允许同时登陆，当有已存在登陆时把之前的登陆用户强制登出
+            LoginRefs = sets:add_element(SessionId, sets:new()),
+            {reply, [?RESP_OK, [UId, type_utils:any_to_binary(Login), Token]],
+                     State#state{login_refs = LoginRefs}}
+    end;
+
+handle_call({do_logout, Login, SessionId}, _From, #state{login_refs = LoginRefs}=State) ->
+    NLoginRefs = sets:del_element(SessionId, LoginRefs),
+    case sets:size(NLoginRefs) of
+        0 ->
+            lager:info("[Admin:~p] logout", [Login]),
+            {stop, normal, [?RESP_OK, <<"ok">>], State};
+        _ ->
+            {reply, [?RESP_OK, <<"ok">>], State#state{login_refs = NLoginRefs}}
+    end;
+
+handle_call(Request, _From, #state{}=State) ->
+    lager:warning("Can't handle request: ~p", [Request]),
+    {reply, {error, invalid_request}, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling cast messages
+%%
+%% @spec handle_cast(Msg, State) -> {noreply, State} |
+%%                                  {noreply, State, Timeout} |
+%%                                  {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_cast({request, next}, #state{}=State) ->
+    #state{login    = Login,
+           requests = Requests} = State,
+    PName = ninja_process_name:admin_login_manager(Login),
+    gen_server:cast(PName, {request, Requests}),
+    {noreply, State};
+
+handle_cast({request, []}, #state{}=State) ->
+    {noreply, State};
+
+handle_cast({request, Requests}, #state{}=State) when is_list(Requests) ->
+    #state{login             = Login,
+           admin_id          = AId,
+           tid               = TId,
+           uid               = UId,
+           token             = Token,
+           market_stream_end = MarketStreamEnd} = State,
+
+    PName = ninja_process_name:admin_login_manager(Login),
+    [Request | Tail] = Requests,
+    
+    case Request of
+        market_ticks ->
+            {ok, _} = cheetah_market:start(Login, TId, UId, Token, MarketStreamEnd),
+            gen_server:cast(PName,{request, Tail});
+        monitor_groups ->
+            login_progress:step(AId, sync_monitor_groups),
+            gen_server:cast(PName, {list_to_atom("req_" ++ atom_to_list(Request)), 0});
+        _ ->
+            gen_server:cast(PName, {list_to_atom("req_" ++ atom_to_list(Request))})
+    end,
+    {noreply, State#state{requests = Tail}};
+
+handle_cast({sync_complete}, State) ->
+    #state{from = From} = State,
+    gen_server:reply(From, [?RESP_OK, <<"ok">>]),
+    {noreply, State};
+
+%%--------------------------------------------------------------------
+%%请求同步管理员
+handle_cast({req_admins}, #state{login = Login}=State) ->
+    lager:debug("[Admin:~p] Requests admins", [Login]),
+    admin_net_backbone:send(Login, [?ADMINS, req_id()]),
+    {noreply, State};
+
+%% 请求合约
+handle_cast({req_instruments}, #state{login = Login}=State) ->
+    lager:debug("[Admin:~p] Requests instruments", [Login]),
+    admin_net_backbone:send(Login, [?INSTRUMENTS2, req_id()]),
+    {noreply, State};
+
+%% 请求品种
+handle_cast({req_products}, #state{login = Login}=State) ->
+    lager:debug("[Admin:~p] Requests products", [Login]),
+    admin_net_backbone:send(Login, [?PRODUCTS, req_id()]),
+    {noreply, State};
+
+%% 请求所有投资者
+handle_cast({req_investors}, #state{login = Login}=State) ->
+    lager:debug("[Admin:~p] Requests investors", [Login]),
+    admin_net_backbone:send(Login, [?ACTIVE_INVESTORS, req_id()]),
+    {noreply, State};
+
+%% 请求投资者
+handle_cast({req_investor, InvestorOutId}, #state{login = Login}=State) ->
+    lager:debug("[Admin:~p] Requests investor", [Login]),
+    admin_net_backbone:send(Login, [?ACTIVE_INVESTORS, req_id(), InvestorOutId]),
+    {noreply, State};
+
+%% 请求柜员管辖下的投资者
+handle_cast({req_admin_investors}, #state{login = Login, admin_id = AId}=State) ->
+    % lager:debug("[Admin:~p] Requests admin_investors", [Login]),
+    login_progress:step(AId, sync_admin_investors),
+    admin_net_backbone:send(Login, [?ADMIN_INVESTORS, req_id()]),
+    {noreply, State};
+
+%% 请求用户组
+handle_cast({req_groups}, #state{login    = Login,
+                                 admin_id = AId}=State) ->
+    % lager:debug("[Admin:~p] Requests groups", [Login]),
+    login_progress:step(AId, sync_groups),
+    admin_net_backbone:send(Login, [?ADMIN_GROUPS, req_id()]),
+    {noreply, State};
+
+%% 请求用户组内的用户
+handle_cast({req_group_users, GroupId}, #state{}=State) ->
+    #state{login       = Login,
+           req_id_pool = ReqIdPool} = State,
+
+    %lager:debug("[Admin:~p] Requests group<id=~p> users", [Login, GroupId]),
+    ReqId = req_id(),
+    admin_net_backbone:send(Login, [?GROUP_USERS, ReqId, GroupId]),
+    ReqIdPool1 = orddict:store(ReqId, GroupId, ReqIdPool),
+    NReqIdPool = orddict:store({ReqId, reset}, GroupId, ReqIdPool1),
+    {noreply, State#state{req_id_pool = NReqIdPool}};
+
+%% 请求柜员管辖组以及管辖范围内的投资者
+handle_cast({req_adminships}, #state{login    = Login,
+                                     admin_id = AId}=State) ->
+    %lager:debug("[Admin:~p] Requests adminships", [Login]),
+    login_progress:step(AId, sync_adminships),
+    admin_net_backbone:send(Login, [?ADMINSHIPS, req_id()]),
+    {noreply, State};
+
+%% 请求风控组
+handle_cast({req_monitor_groups, ParentId}, #state{}=State) ->
+    #state{login    = Login,
+           admin_id = AdminId } = State,
+    %lager:debug("[Admin:~p] Requests monitor_groups", [Login]),
+    case ParentId of
+        0 -> ok;
+        _ ->
+            login_progress:sub_step(AdminId, sync_monitor_groups, {start, ParentId})
+    end,
+    admin_net_backbone:send(Login, [?MONITOR_GROUPS, req_id(), ParentId]),
+    {noreply, State};
+
+%% 请求风控组内的用户
+handle_cast({req_monitor_usrs, CPMGroupId, CMGroupId}, #state{}=State) ->
+    #state{login       = Login,
+           admin_id    = AdminId,
+           req_id_pool = ReqIdPool} = State,
+
+    lager:debug("[Admin:~p] Requests users in monitor group<id=~p>", [Login, CMGroupId]),
+    ReqId = req_id(),
+    login_progress:sub_step(AdminId, sync_monitor_usrs, {start, CMGroupId}),
+    
+    admin_net_backbone:send(Login, [?MONITOR_USRS, ReqId, CMGroupId]),
+    NReqIdPool = orddict:store(ReqId, [CPMGroupId, CMGroupId], ReqIdPool),
+    {noreply, State#state{req_id_pool = NReqIdPool}};
+
+%% 请求持仓
+handle_cast({req_positions, InvestorOutId}, #state{}=State) ->
+    #state{login       = Login,
+           admin_id    = AdminId,
+           req_id_pool = ReqIdPool} = State,
+
+    ReqId = req_id(),
+    login_progress:sub_step(AdminId, sync_monitor_usrs_positions, {start, InvestorOutId}),
+
+    admin_net_backbone:send(Login, [?POSITIONS, ReqId, InvestorOutId]),
+    NReqIdPool = orddict:store(ReqId, InvestorOutId, ReqIdPool),
+    {noreply, State#state{req_id_pool = NReqIdPool}};
+
+%% 请求用户报单
+handle_cast({req_live_orders, InvestorOutId}, #state{}=State) ->
+    #state{login             = Login,
+            admin_id         = AdminId,
+           req_callback_dict = ReqCallbacks} = State,
+
+    ReqId = req_id(),
+    login_progress:sub_step(AdminId, sync_monitor_usrs_orders, {start, ReqId}),  %存入ReqId
+    
+    admin_net_backbone:send(Login, [?ORDERS, ReqId, InvestorOutId]),
+    NReqCallbacks = orddict:store(ReqId, [live, InvestorOutId], ReqCallbacks),
+    {noreply, State#state{req_callback_dict = NReqCallbacks}};
+
+%% 请求当日成交记录
+handle_cast({req_live_trades, InvestorOutId}, #state{}=State) ->
+    #state{login             = Login,
+           admin_id          = AdminId,
+           req_callback_dict = ReqCallbacks,
+           req_id_pool       = ReqIdPool} = State,
+
+    ReqId = req_id(),
+    login_progress:sub_step(AdminId, sync_monitor_usrs_trades, {start, InvestorOutId}),  %存入out_id
+    
+    admin_net_backbone:send(Login, [?TRADES, ReqId, InvestorOutId]),
+    NReqCallbacks = orddict:store(ReqId, [live, InvestorOutId], ReqCallbacks),
+    NReqIdPool = orddict:store({ReqId, reset}, InvestorOutId, ReqIdPool),
+    {noreply, State#state{req_callback_dict = NReqCallbacks,
+                          req_id_pool       = NReqIdPool}};
+
+%% 请求当日策略执行日志
+handle_cast({req_live_strategy_exec_logs, InvestorOutId}, #state{}=State) ->
+    #state{login             = Login,
+           req_callback_dict = ReqCallbacks} = State,
+
+    lager:debug("[Admin:~p] Requests investor(out_id=~p) strategy_exec_logs",
+                [Login, InvestorOutId]),
+    ReqId = req_id(),
+
+    {T, _Y} = erlang:localtime(),
+    {datetime, StartDate} = date_util:beginning_of_day({date, T}),
+    StartAt = date_util:datetime_to_epoch(StartDate),
+    {datetime, EndDate} = date_util:end_of_day({date, T}),
+    EndAt = date_util:datetime_to_epoch(EndDate),
+
+    admin_net_backbone:send(Login, [?STRATEGY_EXEC_LOGS, ReqId, InvestorOutId, [StartAt, EndAt]]),
+    NReqCallbacks = orddict:store(ReqId, [live, InvestorOutId], ReqCallbacks),
+    {noreply, State#state{req_callback_dict = NReqCallbacks}};
+
+%% 请求用户资金
+handle_cast({req_capitals, InvestorOutId}, #state{}=State) ->
+    #state{login             = Login,
+           admin_id          = AdminId} = State,
+    ReqId = req_id(),
+    login_progress:sub_step(AdminId, sync_monitor_usrs_capitals, {start, ReqId}),  %存入ReqId
+
+    admin_net_backbone:send(Login, [?CAPS, ReqId, InvestorOutId]),
+    {noreply, State};
+
+handle_cast(Msg, #state{}=State) ->
+    lager:warning("Can't handle msg: ~p", [Msg]),
+    {noreply, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Handling all non call/cast messages
+%%
+%% @spec handle_info(Info, State) -> {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, State}
+%% @end
+%%--------------------------------------------------------------------
+handle_info({reply, Result}, #state{}=State) ->
+    #state{login             = Login,
+           from              = From,
+           init_fun          = InitFun,
+           admin_id          = AdminId,
+           init_session_id   = SessionId,
+           login_refs        = LoginRefs,
+           req_id_pool       = ReqIdPool,
+           req_callback_dict = ReqCallbacks} = State,
+
+    Sync = ninja_process_name:cheetah_sync(Login),
+    case Result of
+        %% 柜员第一次登录
+        [?LOGIN, [?RESP_OK, [AId, TId, UId, Token, MarketStreamEnd]]] ->
+            case InitFun of
+                undefined -> ok;
+                _         -> InitFun()
+            end,
+
+            Processes = launch_processes(registered_supervisors(), Login, AId),
+            NLoginRefs = sets:add_element(SessionId, LoginRefs),
+            gen_server:reply(From, [?RESP_OK, [UId, type_utils:any_to_binary(Login), Token]]),
+            {noreply, State#state{admin_id          = AId,
+                                  processes         = Processes,
+                                  login_refs        = NLoginRefs,
+                                  token             = Token,
+                                  tid               = TId,
+                                  uid               = UId,
+                                  market_stream_end = MarketStreamEnd}};
+
+        %% 柜员连接交易网关TCP连接断开后重新登录,同步权益计算相关数据
+        [?LOGIN, [?RESP_OK, [TId, UId, Token, MarketStreamEnd]]] ->
+            request(Login, [market_ticks, monitor_groups]),
+            {noreply, State#state{token             = Token,
+                                  tid               = TId,
+                                  uid               = UId,
+                                  market_stream_end = MarketStreamEnd}};
+
+        %% 柜员登录失败
+        [?LOGIN, [?RESP_FAILED, Error]] ->
+            gen_server:reply(From, [?RESP_FAILED, Error]),
+            {stop, normal, State};
+
+        %% 同步管理员
+        [?ADMINS, _ReqId, [?RESP_OK, Admins]] ->
+            gen_server:cast(Sync, {admins, Admins}),
+            {noreply, State};
+
+        %% 同步合约
+        [?INSTRUMENTS2, _ReqId, [?RESP_OK, Instruments]] ->
+            gen_server:cast(Sync, {instruments, Instruments}),
+            {noreply, State};
+
+        %% 同步品种
+        [?PRODUCTS, _ReqId, [?RESP_OK, Products]] ->
+            gen_server:cast(Sync, {products, Products}),
+            {noreply, State};
+
+        %% 同步投资者结束
+        [?ACTIVE_INVESTORS, _ReqId, [?ASYNC_RESP_END]] ->
+            {noreply, State};
+
+        %% 同步投资者
+        [?ACTIVE_INVESTORS, _ReqId, [?ASYNC_RESP_OK, Investors]] ->
+            gen_server:cast(Sync, {investors, Investors}),
+            {noreply, State};
+
+        %% 同步管辖下的投资者结束
+        [?ADMIN_INVESTORS, _ReqId, [?ASYNC_RESP_END]] ->
+            {noreply, State};
+
+        %% 同步管辖下的投资者
+        [?ADMIN_INVESTORS, _ReqId, [?ASYNC_RESP_OK, Investors]] ->
+            gen_server:cast(Sync, {investors, Investors}),
+            {noreply, State};
+
+        %% 同步用户组
+        [?ADMIN_GROUPS, _ReqId, [?RESP_OK, Groups]] ->
+            gen_server:cast(Sync, {groups, Groups}),
+            {noreply, State};
+
+        [?ADMIN_GROUPS, _ReqId, [?RESP_FAILED, _Error]] ->
+            login_progress:step(AdminId, sync_groups_failed),
+            {noreply, State};
+
+        %% 同步用户组里面的用户
+        [?GROUP_USERS, ReqId, [?ASYNC_RESP_OK, UIds]] ->
+            case orddict:find(ReqId, ReqIdPool) of
+                error ->
+                     lager:error("[Admin:~p] no such request id: ~p", [Login, ReqId]),
+                     {noreply, State};
+                {ok, CGroupId} ->
+                    NReqIdPool =
+                        case orddict:find({ReqId, reset}, ReqIdPool) of
+                            error -> ReqIdPool;
+                            {ok, _} ->
+                                gen_server:cast(Sync, {memberships, reset, CGroupId}),
+                                orddict:erase({ReqId, reset}, ReqIdPool)
+                        end,
+                     gen_server:cast(Sync, {memberships, UIds, CGroupId}),
+                     {noreply, State#state{req_id_pool = NReqIdPool}}
+            end;
+
+        %% 同步用户组里面的用户结束
+        [?GROUP_USERS, ReqId, [?ASYNC_RESP_END]] ->
+            NReqIdPool = orddict:erase(ReqId, ReqIdPool),
+            {noreply, State#state{req_id_pool = NReqIdPool}};
+
+        %% 同步管辖组以及管辖范围内的投资者
+        [?ADMINSHIPS, _ReqId, [?RESP_OK, Adminships]] ->
+            gen_server:cast(Sync, {adminships, Adminships}),
+            {noreply, State};
+
+        [?ADMINSHIPS, _ReqId, [?RESP_FAILED, _Error]] ->
+            login_progress:step(AdminId, sync_adminships_failed),
+            {noreply, State};
+
+        %% 同步风险监控组
+        [?MONITOR_GROUPS, _ReqId, [?RESP_OK, MonitorGroups]] ->
+            gen_server:cast(Sync, {monitor_groups, MonitorGroups}),
+            {noreply, State};
+
+        [?MONITOR_GROUPS, _ReqId, [?RESP_FAILED, Error]] ->
+            login_progress:step(AdminId, sync_monitor_groups_failed),
+            lager:error("[Admin:~p] Fetch monitor groups error: ~p", [Login, Error]),
+            {noreply, State};
+
+        %% 同步风险监控组下的用户
+        [?MONITOR_USRS, ReqId, [?RESP_OK, InvestorOutIds]] ->
+            case orddict:find(ReqId, ReqIdPool) of
+                error ->
+                    lager:error("[Admin:~p] no such req_id ~p", [Login, ReqId]),
+                    {noreply, State};
+                {ok, [_, CMGroupId]} ->
+                    gen_server:cast(Sync, {monitor_users, InvestorOutIds, CMGroupId}),
+                    NReqIdPool = orddict:erase(ReqId, ReqIdPool),
+                    {noreply, State#state{req_id_pool = NReqIdPool}}
+            end;
+
+        [?MONITOR_USRS, _ReqId, [?RESP_FAILED, Error]] ->
+            lager:error("[Admin:~p]: Fetch monitor users error:~p", [Login, Error]),
+            {noreply, State};
+
+        [?POSITIONS, ReqId, [?RESP_OK, Positions]] ->
+            case orddict:find(ReqId, ReqIdPool) of
+                error ->
+                    lager:error("[Admin:~p] no such req_id ~p", [Login, ReqId]),
+                    {noreply, State};
+                {ok, InvestorOutId} ->
+                    gen_server:cast(Sync, {positions, InvestorOutId, Positions}),
+                    NReqIdPool = orddict:erase(ReqId, ReqIdPool),
+                    {noreply, State#state{req_id_pool = NReqIdPool}}
+            end;
+
+        [?POSITIONS, ReqId, [?RESP_FAILED, Error]] ->
+          lager:error("XXXXXXXXXXXXXXXXXX=>>>>>>>>>>>>>> positions failed"),
+        {noreply, State};
+
+        %% 同步委托记录
+        [?ORDERS, ReqId, [?ASYNC_RESP_OK, Orders]] ->
+            case orddict:find(ReqId, ReqCallbacks) of
+                error ->
+                    ok;
+                {ok, [callback_id, CallbackId]} ->
+                    ws_msg_router:pub_to_admin({AdminId, CallbackId}, {orders, Orders});
+                {ok, [live, _InvestorOutId]} ->
+                    login_progress:sub_step(AdminId, sync_monitor_usrs_orders, {complete, ReqId}), %移除ReqId
+                    gen_server:cast(Sync, {live_orders, AdminId, Orders});
+                {ok, _} ->
+                    gen_server:cast(Sync, {orders, Orders})
+            end,
+            {noreply, State};
+
+        %% 同步委托记录结束
+        [?ORDERS, ReqId, [?ASYNC_RESP_END]] ->
+            NReqCallbacks =
+                case orddict:find(ReqId, ReqCallbacks) of
+                    {ok, [callback_id, CallbackId] = InvertedKey} ->
+                        case orddict:find(InvertedKey, ReqCallbacks) of
+                            {ok, Reqs} ->
+                                NReqs = sets:del_element(ReqId, Reqs),
+                                case sets:size(NReqs) of
+                                    0 ->
+                                        ws_msg_router:unreg_callback(AdminId, CallbackId),
+                                        orddict:erase(InvertedKey, ReqCallbacks);
+                                    _ ->
+                                        orddict:store(InvertedKey, NReqs, ReqCallbacks)
+                                end;
+                            _ -> ReqCallbacks
+                        end;
+                    {ok, [live, _InvestorOutId]} ->
+                        login_progress:sub_step(AdminId, sync_monitor_usrs_orders, {complete, ReqId}), %移除ReqId
+                        ReqCallbacks;
+                    _ ->
+                        ReqCallbacks
+                end,
+            NReqCallbacks2 = orddict:erase(ReqId, NReqCallbacks),
+            {noreply, State#state{req_callback_dict = NReqCallbacks2}};
+
+        %% 同步成交记录
+        [?TRADES, ReqId, [?ASYNC_RESP_OK, Trades]] ->
+            case orddict:find(ReqId, ReqCallbacks) of
+                error ->
+                    {noreply, State};
+                {ok, [live, InvestorOutId]} ->
+                    NReqIdPool = case orddict:find({ReqId, reset}, ReqIdPool) of
+                                      error -> ReqIdPool;
+                                      {ok, _} ->
+                                          gen_server:cast(Sync, {live_trades, reset, InvestorOutId}),
+                                          orddict:erase({ReqId, reset}, ReqIdPool)
+                                 end,
+                    gen_server:cast(Sync, {live_trades, resp_ok, InvestorOutId, Trades}),
+                    {noreply, State#state{req_id_pool = NReqIdPool}};
+                {ok, _} ->
+                    gen_server:cast(Sync, {trades, Trades}),
+                    {noreply, State}
+            end;
+        [?TRADES, ReqId, [?ASYNC_RESP_FAILED], _] ->
+          lager:info("XXXXXXXXXXXXXXXXXXXXXX======> trades failed"),
+        {noreply, State};
+
+        %% 同步成交记录结束
+        [?TRADES, ReqId, [?ASYNC_RESP_END]] ->
+            case orddict:find(ReqId, ReqCallbacks) of
+                error ->
+                    {noreply, State};
+                {ok, [live, InvestorOutId]} ->
+                    NReqIdPool = case orddict:find({ReqId, reset}, ReqIdPool) of
+                                      error   -> ReqIdPool;
+                                      {ok, _} -> orddict:erase({ReqId, reset}, ReqIdPool)
+                                 end,
+                    gen_server:cast(Sync, {live_trades, resp_end, InvestorOutId, []}),
+                    NReqCallbacks = orddict:erase(ReqId, ReqCallbacks),
+                    {noreply, State#state{req_callback_dict = NReqCallbacks,
+                                          req_id_pool       = NReqIdPool}}
+            end;
+
+        [?STRATEGY_EXEC_LOGS, ReqId, [?RESP_OK, StrategyExecLogs]] ->
+            case orddict:find(ReqId, ReqCallbacks) of
+                error ->
+                    {noreply, State};
+                {ok, [live, InvestorOutId]} ->
+                    gen_server:cast(Sync, {live_strategy_exec_logs, InvestorOutId, StrategyExecLogs}),
+                    NReqCallbacks = orddict:erase(ReqId, ReqCallbacks),
+                    {noreply, State#state{req_callback_dict = NReqCallbacks}}
+            end;
+
+        %% 同步用户资金
+        [?CAPS, ReqId, [?RESP_OK, Capitals]] ->
+            login_progress:sub_step(AdminId, sync_monitor_usrs_capitals, {complete, ReqId}), %移除ReqId
+            gen_server:cast(Sync, {capital, Capitals}),
+            {noreply, State};
+
+        [?CAPS, ReqId, [?RESP_FAILED, _Error]] ->
+            login_progress:sub_step(AdminId, sync_monitor_usrs_capitals, {complete, ReqId}), %移除ReqId
+        {noreply, State};
+
+        _ ->
+            {noreply, State}
+    end;
+
+handle_info(Info, State) ->
+    lager:warning("Can't handle info: ~p", [Info]),
+    {noreply, State}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% This function is called by a gen_server when it is about to
+%% terminate. It should be the opposite of Module:init/1 and do any
+%% necessary cleaning up. When it returns, the gen_server terminates
+%% with Reason. The return value is ignored.
+%%
+%% @spec terminate(Reason, State) -> void()
+%% @end
+%%--------------------------------------------------------------------
+terminate(_Reason, #state{}=State) ->
+    #state{login     = Login,
+           processes = Processes}=State,
+
+    admin_net_backbone:terminate(Login),
+    terminate_processes(Processes),
+    ok.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% Convert process state when code is changed
+%%
+%% @spec code_change(OldVsn, State, Extra) -> {ok, NewState}
+%% @end
+%%--------------------------------------------------------------------
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
+
+%%%===================================================================
+%%% Internal functions
+%%%===================================================================
+req_id() ->
+    UUId = uuid:to_compact_string(uuid:srandom()),
+    PId = pid_to_list(self()),
+    list_to_binary(string:join([UUId,PId], ":")).
+
+registered_supervisors() ->
+    [
+      heartbeat_sup,
+      timed_buffer_sup,
+      cheetah_admin_runtime_summary_sup,
+      cheetah_admin_runtime_sup,
+      cheetah_sync_sup,
+      ws_msg_router_sup,
+      commission_rate_manager_sup,
+      margin_rate_manager_sup,
+      strategy_manager_sup,
+      binding_manager_sup,
+      account_manager_sup,
+      instrument_manager_sup,
+      admin_risk_manager_sup,
+      investor_manager_sup,
+      login_progress_sup
+    ].
+
+launch_processes(Supervisors, Login, AdminId) when is_list(Supervisors) ->
+    lists:foldl(
+        fun(Supervisor, AccIn) ->
+            case supervisor:start_child(Supervisor, [Login, AdminId]) of
+                {ok, Pid} -> 
+                    orddict:store(Supervisor, Pid, AccIn);
+                {ok, Pid, _Info} ->
+                    orddict:store(Supervisor, Pid, AccIn);
+                {error, {already_started, Pid} } ->
+                    orddict:store(Supervisor, Pid, AccIn);
+                {error, Reason} ->
+                    lager:error("[~p] ~p start manager failed: ~p~n",
+                                 [Login, Supervisor, Reason]),
+                    AccIn
+            end
+        end, orddict:new(), Supervisors).
+
+terminate_processes(Processes) ->
+    orddict:fold(
+        fun(Supervisor, Pid, _AccIn) ->
+            case is_process_alive(Pid) of
+                false ->
+                    ok;
+                true ->
+                    supervisor:terminate_child(Supervisor, Pid)
+            end
+        end, [], Processes).
