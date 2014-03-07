@@ -1,0 +1,20 @@
+ubuntu swap(交换分区）被删后的重新挂载
+用了一段时间后发现自己的swap基本上用不到，于是想把该分区调小。正好赶上在用winxp，于是一同学自告奋勇的帮我弄，可谁知他没听明白我的意思，三下五除二就在磁盘管理下把 我的swap给删了。由于 自己 很少用到swap于是试试看能能进ubuntu，试了一下还真的可以。可是从坛子里看到说最好还是有swap的比较好。于是search！
+最后这 是这样解决的：
+首先装了一个linux的磁盘管理软件：sudo apt-get install gparted
+安装完成 后在terminal中:sudo gparted
+再往下的事情就比较简单了，把刚刚删去的那个分区再格成Linux-swap就可以了，这时的swap并没有挂载上，所以你需要先选中刚才的那个分区，然后到菜单栏：分区，可以看到“激活这个分区”
+再看一下你会发现swap已 经挂载好了
+that's all!
+
+后来发现重新开机时并不能自动挂载，于是上网看了一下，可以如此解决：
+sudo gedit /etc/fstab
+
+找到类似这样的一行
+# /dev/sda9
+UUID=d382449e-4ddf-4f38-8a96-8ca7b58c789e none            swap    #sw              0       0
+改成
+／dev／sda9     swap     sw 0   0 
+
+然后save。
+再reboot 一下，就可以自动挂载了！

@@ -17,7 +17,7 @@
 
   交易日使用: varieties, instruments, investors, 
 
-  	TradingDay = "2014-02-27".
+  	TradingDay = "2014-03-06".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
@@ -25,7 +25,7 @@
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-02-27".
+    TradingDay = "2014-03-06".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2). 
@@ -44,7 +44,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-02-27".
+    TradingDay = "2014-03-06".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -52,6 +52,7 @@
   rocket_finance_manager:calc_ranks(2, TradingDay).    % 计算模拟复赛成绩 < 1minutes
 
   统计初赛、复赛 比赛统计数据 (缺用户操作日志)
+  rocket_finance_manager:stat_contest(1, TradingDay).
   rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
   rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
 
@@ -68,14 +69,14 @@
 
   计算权益日K线 (缺用户操作日志)*
 
-    TradingDay = "2014-02-27".
+    TradingDay = "2014-03-06".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-02-27.utf8.csv
-  iconv -f gbk -t utf8 2014-02-27.csv > 2014-02-27.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-03-06.utf8.csv
+  iconv -f gbk -t utf8 2014-03-06.csv > 2014-03-06.utf8.csv
 
 
   淘汰长期不交易名单
@@ -89,16 +90,16 @@
   ------------------------------------------------------------------------------------
   计算单个用户的成绩 
 
-  insert into phases set investor_id = (select id from investors where out_id = 136601), contest_id = 2, started_at = "2014-01-22 00:00:00",result = 1, init_capital = 500000;
+  insert into phases set investor_id = (select id from investors where out_id = 107724), contest_id = 1, started_at = "2014-03-06 00:00:00",result = 1, init_capital = 500000;
 
-  insert into participations set investor_id = (select id from investors where out_id = 136601), contest_id = 2,phase_id = (select id from phases where investor_id = (select id from investors where out_id = 136601) and contest_id = 2 and started_at = "2014-01-22 00:00:00");
+  insert into participations set investor_id = (select id from investors where out_id = 107724), contest_id = 1,phase_id = (select id from phases where investor_id = (select id from investors where out_id = 107724) and contest_id = 1 and started_at = "2014-03-06 00:00:00");
 
-  insert into contest_ranks set investor_id = (select id from investors where out_id = 136601), contest_id = 2, phase_id = (select id from phases where investor_id = (select id from investors where out_id = 136601) and contest_id = 2 and started_at = "2014-01-22 00:00:00"), init_capital = 500000, max_init_capital = 500000, started_at = "2014-01-22 00:00:00";
+  insert into contest_ranks set investor_id = (select id from investors where out_id = 107724), contest_id = 1, phase_id = (select id from phases where investor_id = (select id from investors where out_id = 107724) and contest_id = 1 and started_at = "2014-03-06 00:00:00"), init_capital = 500000, max_init_capital = 500000, started_at = "2014-03-06 00:00:00";
 
-  update investors set phase_id = 114506, contest_status = 1, next_launch_date = "2014-01-22 00:00:00" where id = 37108;
+  update investors set phase_id = 120201, contest_status = 1, next_launch_date = "2014-03-06 00:00:00" where out_id = 107724;
 
-  TradingDay = "2014-02-26".
-  OutId = 120719.
+  TradingDay = "2014-03-06".
+  OutId = 107724.
   rocket_finance_manager:calc_investor_rank({out_id, OutId}, TradingDay).
   ------------------------------------------------------------------------------------
 
@@ -139,8 +140,14 @@
 
 
   审核
-LK108032通过审核，于2014-02-28参加复赛
-LK128930通过审核，于2014-02-28参加复赛
+LK100164通过审核，于2014-03-07参加复赛
+LK100635通过审核，于2014-03-07参加复赛
+LK100636通过审核，于2014-03-07参加复赛
+LK111890通过审核，于2014-03-07参加复赛
+LK115136通过审核，于2014-03-07参加复赛
+LK117975通过审核，于2014-03-07参加复赛
+LK126172通过审核，于2014-03-07参加复赛
+
   实盘
 
 
@@ -149,48 +156,69 @@ LK128930通过审核，于2014-02-28参加复赛
 
 
   晋级
-LK116409
+LK100674
+LK101152
+LK101290
+LK113871
+LK114796
+LK116926
+LK124646
+LK125140
+LK126652
+LK137905
+LK139678
+12
+
   淘汰
 
-
   rails runner lib/finance/importer.rb
-  总淘汰共304 一共6076
+  总淘汰共297 一共6440
 
 
   复赛
 长时间不交易
 
   淘汰
+LK100289
+LK103137
+LK111326
+LK111503
+LK119573
+LK122038
+
+
 
 
   晋级
+LK102250
 
-
-  总淘汰    共 143
+  总淘汰    共 155
 
   select * from contest_ranks where  investor_id = 2674;
 
   少人
 
-  c = ContestRank.select("investor_id").where(:trading_day => "2013-12-13 00:00:00",:contest_id => 1)
+  c = ContestRank.select("investor_id").where(:trading_day => "2014-02-28 00:00:00",:contest_id => 1)
   investor_ids = c.collect{|x| x.investor_id.to_i}
 
   aa = Investor.select('out_id').where(:id => investor_ids)
 
 
-  outIds_ids = c.collect{|x| x.investor_id.to_i}
+  outIds_ids = aa.collect{|x| x.out_id.to_i}
 
 
 
   LK101853通过审核，于2013-12-23参加复赛 id = 11208
 
-  update investors set contest_id = 2, 
+  update investors set contest_id = 1, 
   contest_status = 1, 
   launch_init_cap = 500000, 
-  next_launch_date = "2014-02-26 00:00:00" where out_id in (104709,119508,120719);
+  next_launch_date = "2014-03-06 00:00:00" where out_id in (107724);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
 
 
+duo LK124438 24121
 
-
+shao LK132266 32814
+select * from candlesticks order by id desc limit 10;
