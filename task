@@ -17,7 +17,7 @@
 
   交易日使用: varieties, instruments, investors, 
 
-  	TradingDay = "2014-03-06".
+  	TradingDay = "2014-03-11".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
@@ -25,7 +25,7 @@
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-03-06".
+    TradingDay = "2014-03-11".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2). 
@@ -44,7 +44,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-03-06".
+    TradingDay = "2014-03-11".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -69,14 +69,14 @@
 
   计算权益日K线 (缺用户操作日志)*
 
-    TradingDay = "2014-03-06".
+    TradingDay = "2014-03-11".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-03-06.utf8.csv
-  iconv -f gbk -t utf8 2014-03-06.csv > 2014-03-06.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-03-11.utf8.csv
+  iconv -f gbk -t utf8 2014-03-11.csv > 2014-03-11.utf8.csv
 
 
   淘汰长期不交易名单
@@ -140,13 +140,16 @@
 
 
   审核
-LK100164通过审核，于2014-03-07参加复赛
-LK100635通过审核，于2014-03-07参加复赛
-LK100636通过审核，于2014-03-07参加复赛
-LK111890通过审核，于2014-03-07参加复赛
-LK115136通过审核，于2014-03-07参加复赛
-LK117975通过审核，于2014-03-07参加复赛
-LK126172通过审核，于2014-03-07参加复赛
+LK109837通过审核，于2014-03-12参加复赛
+0LK100864通过审核，于2014-03-12参加复赛
+LK100876通过审核，于2014-03-12参加复赛
+0LK108328通过审核，于2014-03-12参加复赛
+0LK110560通过审核，于2014-03-12参加复赛
+0LK117838通过审核，于2014-03-12参加复赛
+0LK119442通过审核，于2014-03-12参加复赛
+0LK131094通过审核，于2014-03-12参加复赛
+0LK136030通过审核，于2014-03-12参加复赛
+0LK137780通过审核，于2014-03-12参加复赛
 
   实盘
 
@@ -156,43 +159,54 @@ LK126172通过审核，于2014-03-07参加复赛
 
 
   晋级
-LK100674
-LK101152
-LK101290
-LK113871
-LK114796
-LK116926
-LK124646
-LK125140
-LK126652
-LK137905
-LK139678
-12
+LK100080
+LK100242
+LK100481
+LK101687
+LK101882
+LK106298
+LK107571
+LK109705
+LK117135
+LK119792
+LK122754
+LK125002
+LK132121
+LK135698
+14
 
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共297 一共6440
+  总淘汰共375 一共5422
 
 
   复赛
 长时间不交易
 
   淘汰
-LK100289
-LK103137
-LK111326
-LK111503
-LK119573
-LK122038
+LK100346
+LK102151
+LK108184
+LK108728
+LK114092
+LK122450
+LK124970
+LK126994
+LK133016
+LK133636
+LK136999
+11
+
 
 
 
 
   晋级
-LK102250
+LK127117
 
-  总淘汰    共 155
+
+  总淘汰    共 166
 
   select * from contest_ranks where  investor_id = 2674;
 
