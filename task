@@ -17,14 +17,14 @@
 
   交易日使用: varieties, instruments, investors,
 
-  	TradingDay = "2014-03-18".
+  	TradingDay = "2014-03-21".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2013-12-09".
+    TradingDay = "2014-03-21".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2).
@@ -43,7 +43,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-03-18".
+    TradingDay = "2014-03-21".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -68,18 +68,19 @@
 
   计算权益日K线 (缺用户操作日志)*
 
-    TradingDay = "2013-12-09".
+    TradingDay = "2014-03-21".
     equity_candlestick_manager:calculate(TradingDay).
+    
+1386547200 || 58 || [day]
+equity_candlestick_worker:calculate(1386547200,2255,[day]).
 
-
-
-    equity_candlestick_manager:calculate2(["2014-03-18","2014-03-18"], 101016)
+    equity_candlestick_manager:calculate2(["2014-03-20","2014-03-20"], 101016)
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-03-18.utf8.csv
-  iconv -f gbk -t utf8 2014-03-18.csv > 2014-03-18.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-03-21.utf8.csv
+  iconv -f gbk -t utf8 2014-03-20.csv > 2014-03-21.utf8.csv
 
 
   淘汰长期不交易名单
@@ -143,11 +144,14 @@
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-LK100157通过审核，于2014-03-19参加复赛
-LK108074通过审核，于2014-03-19参加复赛
-LK110172通过审核，于2014-03-19参加复赛
-LK122120通过审核，于2014-03-19参加复赛
-LK131020通过审核，于2014-03-19参加复赛
+LK113447通过审核，于2014-03-21参加复赛
+LK136623通过审核，于2014-03-21参加复赛
+LK104332通过审核，于2014-03-21参加复赛
+LK109774通过审核，于2014-03-21参加复赛
+LK110713通过审核，于2014-03-21参加复赛
+LK111722通过审核，于2014-03-21参加复赛
+LK112300通过审核，于2014-03-21参加复赛
+LK123637通过审核，于2014-03-21参加复赛
   实盘
 
 
@@ -163,6 +167,26 @@ LK137622
 
 
   晋级
+LK100871
+LK100972
+LK101795
+LK102313
+LK110911
+LK116140
+LK128708
+LK129594
+LK131121
+LK133100
+10
+LK104332
+LK109774
+LK110713
+LK111722
+LK112300
+LK123637
+LK128526
+7
+
 LK101614
 LK102553
 LK106620
@@ -174,36 +198,35 @@ LK127548
 LK130976
 LK136623
 10
-
-LK100157
-LK108074
-LK110172
-LK120749
-LK122120
-LK131020
-6
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共113 一共4201
+  总淘汰共185 一共3944
 
 
   复赛
 长时间不交易
-LK103454
 
   淘汰
-LK100885
-LK101103
-LK101527
-LK117838
-LK134403
+LK101152
+LK105876
+LK114796
+LK116580
+LK119142
+LK120749
+LK123471
+LK125396
+LK131020
+
+
 
   晋级
-LK115895
+LK136396
 
 
-  总淘汰    共 177
+
+
+  总淘汰    共 176
 
   select * from contest_ranks where  investor_id = 2674;
 
@@ -228,13 +251,5 @@ LK115895
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
 
-
-budui
-LK116580
-LK117357
-LK134890
-
-| 16359 |
-| 17125 |
-| 35461 |
-
+LK117357  17125
+LK134890  35461
