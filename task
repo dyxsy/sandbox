@@ -17,14 +17,14 @@
 
   交易日使用: varieties, instruments, investors,
 
-  	TradingDay = "2014-04-17".
+  	TradingDay = "2014-05-05".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-04-17".
+    TradingDay = "2014-05-05".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2).
@@ -43,7 +43,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-04-17".
+    TradingDay = "2014-05-05".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -57,7 +57,8 @@
 
   计算不活跃用户
   rocket_finance_manager:count_inactive_days().
-
+r(1898) launches new phase failed: {1062,"Duplicate entry '1898-2-2014-05-05 00:00:00' for key 'domain_pk'"}
+18:27:02.946 [error] Investor(8539)
   计算单笔   (缺用户操作日志)
 
   %TradingDay = "2014-00-00".
@@ -67,15 +68,14 @@
   搬行情
 
   计算权益日K线 (缺用户操作日志)*
-21 24 26
-    TradingDay = "2014-03-21".
+    TradingDay = "2014-05-05".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-04-17.utf8.csv
-  iconv -f gbk -t utf8 2014-04-17.csv > 2014-04-17.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-05-05.utf8.csv
+  iconv -f gbk -t utf8 2014-05-05.csv > 2014-05-05.utf8.csv
 
 
   淘汰长期不交易名单
@@ -127,39 +127,34 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
 
   ==================比赛审核======================
-  update investors set contest_id = 2, contest_status = 2, comment = "于2014年03月19日参加复赛",next_launch_date = "2014-03-19 00:00:00", launch_init_cap = 500000 where out_id in(122120);
+  update investors set contest_id = 2, contest_status = 2, comment = "于2014年05月06日参加复赛",next_launch_date = "2014-05-06 00:00:00", launch_init_cap = 500000 where out_id in(112802);
 
-  select id from investors where out_id in(116625);
+  select id from investors where out_id in(112802);
   注:LK118381 没有执行一下步骤,原因reviews中没有他的记录
-  select id from reviews where investor_id = 5003;
-  update reviews set next_launch_date = "2013-12-30 00:00:00",reviewed_at = now(),status=1,comment = "于2014年03月18日参加复赛" where id in(2024);
+  select id from reviews where investor_id = 12647;
+  update reviews set next_launch_date = "2014-05-06 00:00:00",reviewed_at = now(),status=1,comment = "于2014年05月06日参加复赛" where id in(2488);
 
   ===============恢复数据=================
-  pv ~/rf_data/rf.20131211_20130603_all.20130603_nokline.dump | mysql -u root rocket_finance
+  pv ~/rf_data/rf.20131211_20140603_all.20130603_nokline.dump | mysql -u root rocket_finance
 
   ========================================
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-LK126233通过审核，于2014-04-18参加复赛
-LK101748通过审核，于2014-04-18参加复赛
-LK109896通过审核，于2014-04-18参加复赛
-LK127963通过审核，于2014-04-18参加复赛
-LK129507通过审核，于2014-04-18参加复赛
-LK135708通过审核，于2014-04-18参加复赛
+   LK100528通过审核，于2014-05-06参加复赛
+   LK112802通过审核，于2014-05-06参加复赛
   实盘
 
   初赛
 长时间不交易
 
   晋级
-LK109475
-LK110553
+LK108318
 
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共113 一共3650
+  总淘汰共53 一共2343
 
 
   复赛
@@ -175,7 +170,7 @@ LK136623
 
   晋级
 
-  总淘汰    共 144
+  总淘汰  7  共 136
 
   select * from contest_ranks where  investor_id = 2674;
 
