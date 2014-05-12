@@ -17,14 +17,14 @@
 
   交易日使用: varieties, instruments, investors,
 
-  	TradingDay = "2014-05-05".
+  	TradingDay = "2014-05-12".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
 
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-05-05".
+    TradingDay = "2014-05-12".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2).
@@ -43,7 +43,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-05-05".
+    TradingDay = "2014-05-12".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -53,12 +53,10 @@
   统计初赛、复赛 比赛统计数据 (缺用户操作日志)
   rocket_finance_manager:stat_contest(1, TradingDay).
   rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
-  rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次
+  rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次`
 
   计算不活跃用户
   rocket_finance_manager:count_inactive_days().
-r(1898) launches new phase failed: {1062,"Duplicate entry '1898-2-2014-05-05 00:00:00' for key 'domain_pk'"}
-18:27:02.946 [error] Investor(8539)
   计算单笔   (缺用户操作日志)
 
   %TradingDay = "2014-00-00".
@@ -68,14 +66,14 @@ r(1898) launches new phase failed: {1062,"Duplicate entry '1898-2-2014-05-05 00:
   搬行情
 
   计算权益日K线 (缺用户操作日志)*
-    TradingDay = "2014-05-05".
+    TradingDay = "2014-05-12".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-05-05.utf8.csv
-  iconv -f gbk -t utf8 2014-05-05.csv > 2014-05-05.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-05-12.utf8.csv
+  iconv -f gbk -t utf8 2014-05-12.csv > 2014-05-12.utf8.csv
 
 
   淘汰长期不交易名单
@@ -141,37 +139,38 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-   LK100528通过审核，于2014-05-06参加复赛
-   LK112802通过审核，于2014-05-06参加复赛
+LK104596通过审核，于2014-05-13参加复赛
+LK107686通过审核，于2014-05-13参加复赛
+LK119442通过审核，于2014-05-13参加复赛
+LK131054通过审核，于2014-05-13参加复赛
+LK135727通过审核，于2014-05-13参加复赛
   实盘
 
   初赛
 长时间不交易
 
   晋级
-LK108318
+LK101457
+LK112693
+LK122659
+LK127015
+LK139423
+
+
 
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共53 一共2343
-
+  总淘汰共296 一共6682
 
   复赛
 长时间不交易
 
   淘汰
-LK102035
-LK102151
-LK102970
-LK114662
-LK136623
-
 
   晋级
 
-  总淘汰  7  共 136
-
+  总淘汰3 共 118
   select * from contest_ranks where  investor_id = 2674;
 
   少人
@@ -191,7 +190,7 @@ LK136623
   update investors set contest_id = 2,
   contest_status = 1,
   launch_init_cap = 500000,
-  next_launch_date = "2014-03-18 00:00:00" where out_id in (105023);
+  next_launch_date = "2014-05-12 00:00:00" where out_id in (101501);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
 

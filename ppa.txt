@@ -1,0 +1,20 @@
+用户安装，有可用PPA，非常方便，打开终端，输入以下命令：
+sudo add-apt-repository ppa:tualatrix/ppa
+sudo apt-get update
+sudo apt-get install ubuntu-tweak
+卸载软件命令：
+sudo apt-get remove ubuntu-tweak
+移除PPA：
+sudo apt-get install ppa-purge
+sudo ppa-purge ppa:tualatrix/ppa
+
+
+
+sudo add-apt-repository ppa:cairo-dock-team/ppa
+sudo apt-get update
+sudo apt-get install cairo-dock cairo-dock-plug-ins oracle-java8-installer
+
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
