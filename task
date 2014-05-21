@@ -17,13 +17,13 @@
 
   交易日使用: varieties, instruments, investors,
 
-  	TradingDay = "2014-05-20".
+  	TradingDay = "2014-05-21".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
     q().退出  重启一下 服务
 
     同步实时行情, 分钟K线
-    TradingDay = "2014-05-20".
+    TradingDay = "2014-05-21".
     Reqs2 = [varieties, instruments, candlesticks].
     %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
     rf_cheetah_sync:run(TradingDay, Reqs2).
@@ -42,7 +42,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-05-20".
+    TradingDay = "2014-05-21".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -65,14 +65,14 @@
   搬行情
 
   计算权益日K线 (缺用户操作日志)*
-    TradingDay = "2014-05-20".
+    TradingDay = "2014-05-21".
     equity_candlestick_manager:calculate(TradingDay).
 
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-05-20.utf8.csv
-  iconv -f gbk -t utf8 2014-05-20.csv > 2014-05-20.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-05-21.utf8.csv
+  iconv -f gbk -t utf8 2014-05-21.csv > 2014-05-21.utf8.csv
 
 
   淘汰长期不交易名单
@@ -138,44 +138,42 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-0LK100739通过审核，于2014-05-21参加复赛
-0LK101264通过审核，于2014-05-21参加复赛
-0LK120698通过审核，于2014-05-21参加复赛
-0LK121847通过审核，于2014-05-21参加复赛
-0LK122828通过审核，于2014-05-21参加复赛
-LK128564通过审核，于2014-05-21参加复赛
-0LK131448通过审核，于2014-05-21参加复赛
-0LK139373通过审核，于2014-05-21参加复赛
-0LK139573通过审核，于2014-05-21参加复赛
+LK129830通过审核，于2014-05-22参加复赛
+LK105150通过审核，于2014-05-22参加复赛
+LK106559通过审核，于2014-05-22参加复赛
+LK114392通过审核，于2014-05-22参加复赛
+LK122482通过审核，于2014-05-22参加复赛
   实盘
 
   初赛
 长时间不交易
 
   晋级
-LK105150
-LK106559
-LK114392
-LK122482
+LK101419
+LK118388
+LK136695
+LK140726
 
 
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共233一共4906
+  总淘汰共207一共4669
 
   复赛
 长时间不交易
 
   淘汰
-LK103697
-LK100745
-LK105837
-LK135543
+LK102067
+LK106192
+LK119442
+LK139373
+LK139573
 
   晋级
+LK133858
 
-  总淘汰5 共 115
+  总淘汰5 共 120
   select * from contest_ranks where  investor_id = 2674;
 
   少人
