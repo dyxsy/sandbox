@@ -17,7 +17,7 @@
 
   交易日使用: varieties, instruments, investors,
 
-  	TradingDay = "2014-06-04".
+  	TradingDay = "2014-07-16".
     Reqs = [varieties, instruments,investors, settlements].
     rf_cheetah_sync:run(TradingDay, Reqs).
     q().退出  重启一下 服务
@@ -42,7 +42,7 @@
   要先审核名单晋级才能初始化
 
   比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-06-04".
+    TradingDay = "2014-07-16".
     contest_initor:do_init(TradingDay).
 
   计算初赛，复赛成绩 (缺用户操作日志)
@@ -71,8 +71,8 @@
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-06-04.utf8.csv
-  iconv -f gbk -t utf8 2014-06-04.csv > 2014-06-04.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-07-16.utf8.csv
+  iconv -f gbk -t utf8 2014-07-16.csv > 2014-07-16.utf8.csv
 
 
   淘汰长期不交易名单
@@ -138,44 +138,38 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-LK114431通过审核，于2014-06-05参加复赛
-LK125916通过审核，于2014-06-05参加复赛
-LK127201通过审核，于2014-06-05参加复赛
-LK132242通过审核，于2014-06-05参加复赛
-LK132546通过审核，于2014-06-05参加复赛
-LK136176通过审核，于2014-06-05参加复赛
-LK136485通过审核，于2014-06-05参加复赛
+LK105159通过审核，于2014-07-16参加复赛
+LK120446通过审核，于2014-07-16参加复赛
+LK126153通过审核，于2014-07-16参加复赛
+
   实盘
 
   初赛
 长时间不交易
 
   晋级
-LK103245
-LK119597
-LK124391
-LK129592
-LK135677
-LK139050
+LK136601
+
 
 
 
   淘汰
 
   rails runner lib/finance/importer.rb
-  总淘汰共116 一共6840
+  总淘汰共102 一共4279
   复赛
 长时间不交易
 
   淘汰
-LK122828
-LK127295
-
+LK104294
+LK110179
+LK110317
+LK137640
 
 
   晋级
 
-  总淘汰3 共 126
+  总淘汰4 共 147
   select * from contest_ranks where  investor_id = 2674;
 
   少人
