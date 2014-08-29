@@ -1,0 +1,46 @@
+
+cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
+cheetah_admin:rank_calc_run(127048,<<"2014-07-22">>).
+cheetah_admin:sign_out(rocketfinance).
+
+cheetah_admin:rank_sync_run(127048,"2014-07-18").
+
+cheetah_admin:rank_calc_run(127048,<<"2014-05-23">>).
+
+TradingDay = "2014-07-16".
+Reqs = [investors].
+rf_cheetah_sync:run(TradingDay, Reqs).
+
+
+    DateTime  = datetime_utils:epoch_to_localtime(TradeTime),
+    DateTimeStr = datetime_utils:datetime_as_string(DateTime),
+
+    DateTime  = date_util:gregorian_seconds_to_datetime(TradeTime),
+    DateTimeStr = mysql_utils:datetime_as_string(DateTime),
+
+    ==============
+
+     {ok, Date} =  date_util:parse_date('yyyy-mm-dd', TradingDay),
+     TradingDay2 = date_util:date_to_epoch(Date),
+
+    Date =  datetime_utils:parse_date(TradingDay, 'yyyy-mm-dd'),
+    TradingDay2 = datetime_utils:localtime_to_epoch({Date,{8,0,0}}),
+
+
+    =============
+
+
+    datetime_utils:datetime_as_string(Today);
+    Now = datetime_utils:localtime_as_string(),
+
+    BeginAt2 = datetime_utils:beginning_of_day({datetime,{{2014,5,7},{0,0,0}}}).
+    EndAt2 = datetime_utils:end_of_day({date,datetime_utils:parse_date({date,{2014,5,23}}, 'yyyy-mm-dd')}).
+
+
+
+    equity_candlestick_worker:async_calculate(1383868800, 26160, [day]).
+
+    equity_candlestick_worker:async_calculate(1386547200, 26160, [day]).
+
+"12-13"
+    equity_candlestick_worker:async_calculate(1386892800, 26160, [day]).
