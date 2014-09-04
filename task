@@ -154,25 +154,26 @@ LK132210通过审核，于2014-09-04参加复赛
 长时间不交易
 
   晋级
-LK136642
+LK120874
+LK131770
 
 
   淘汰
 
-  总淘汰共412 一共7480
+  总淘汰共337 一共7067
   复赛
 长时间不交易
 
   淘汰
-LK101643
-LK102199
-LK120441
+LK102866
+LK112093
+LK126233
 
 
   晋级
 
 
-  总淘汰 共 122
+  总淘汰 共 126
   select * from contest_ranks where  investor_id = 2674;
 
   少人
@@ -186,7 +187,6 @@ LK120441
   outIds_ids = aa.collect{|x| x.out_id.to_i}
 
 
-`
   LK101853通过审核，于2013-12-23参加复赛 id = 11208
 
   update investors set contest_id = 2,
@@ -195,10 +195,3 @@ LK120441
   next_launch_date = "2014-08-07 00:00:00" where out_id in (100891);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
-
-LK117357  17125
-LK134890  35461
-
-
-初赛  LK125965  815236.84 473201.45 815236.84 -12345.16 0 0 -38986.4  733713.16 4 晋级
-初赛  LK125965  500000  492158.02 473201.45 -18956.58 0 0 132031.29 450000  3
