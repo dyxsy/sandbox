@@ -1,0 +1,26 @@
+ControlMaster auto
+ControlPath /tmp/ssh_multiplexing-%r@%h:%p
+ForwardAgent yes
+ForwardX11 yes
+ServerAliveInterval 60
+
+Host taodi
+HostName 202.75.223.108
+    User shengyun
+    Port 9022
+
+Host lknode150x
+    HostName 210.51.23.150
+    User lkadmin
+
+Host lknode68x 
+    HostName 115.239.230.68 
+    User lkadmin
+
+Host lknode55x
+    HostName 115.239.230.55
+    User lkadmin
+
+Host lknode69x
+    HostName 222.73.38.69
+    User lkadmin

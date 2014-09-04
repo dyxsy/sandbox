@@ -54,7 +54,7 @@
   rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
   rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次`
   -------
-  rocket_finance_manager:stat_contest(1,"2014-08-28",undefined)
+  rocket_finance_manager:stat_contest(1,"2014-09-03",undefined)
 
   计算不活跃用户
   rocket_finance_manager:count_inactive_days().
@@ -73,8 +73,8 @@
   导入实盘成绩
   bundle exec thin start -p 4567 开启一个本地端口
 
-  iconv -f gbk -t utf8 real.csv > shipan_2014-08-28.utf8.csv
-  iconv -f gbk -t utf8 2014-08-28.csv > 2014-08-28.utf8.csv
+  iconv -f gbk -t utf8 real.csv > shipan_2014-08-29.utf8.csv
+  iconv -f gbk -t utf8 2014-08-29.csv > 2014-08-29.utf8.csv
 
 
   淘汰长期不交易名单
@@ -139,11 +139,13 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-LK102199通过审核，于2014-08-27参加复赛
-LK102278通过审核，于2014-08-27参加复赛
-LK112093通过审核，于2014-08-27参加复赛
-LK135468通过审核，于2014-08-27参加复赛
-LK142063通过审核，于2014-08-27参加复赛
+LK100023通过审核，于2014-09-04参加复赛
+LK100244通过审核，于2014-09-04参加复赛
+LK100865通过审核，于2014-09-04参加复赛
+LK102038通过审核，于2014-09-04参加复赛
+LK109994通过审核，于2014-09-04参加复赛
+LK121540通过审核，于2014-09-04参加复赛
+LK132210通过审核，于2014-09-04参加复赛
 
 
   实盘
@@ -152,26 +154,25 @@ LK142063通过审核，于2014-08-27参加复赛
 长时间不交易
 
   晋级
-LK102335
-LK101200
+LK136642
 
 
   淘汰
 
-  总淘汰共226 一共3832
+  总淘汰共412 一共7480
   复赛
 长时间不交易
 
   淘汰
-LK106902
-LK118805
-LK100377
+LK101643
+LK102199
+LK120441
 
 
   晋级
 
 
-  总淘汰3 共 130
+  总淘汰 共 122
   select * from contest_ranks where  investor_id = 2674;
 
   少人
