@@ -6,56 +6,6 @@
   god start thin-rocket_finance
   god stop thin-rocket_finance
   ----------------------------------------------------------------------------------------------------------------------------
-  计算全部人成绩
-  进入screen进行操作，有日志可以查看
-  screen -x rocket_finance
-
-  lkadmin@lknode92x:~/cheetah/rocket_finance$ ./ebin/start-dev.sh
-
-  同步数据
-  同步合约，用户，成交记录和登录日志 (缺用户操作日志)
-
-  交易日使用: varieties, instruments, investors,
-
-  	TradingDay = "2014-07-21".
-    Reqs = [varieties, instruments,investors, settlements].
-    rf_cheetah_sync:run(TradingDay, Reqs).
-    q().退出  重启一下 服务
-
-    同步实时行情, 分钟K线
-    TradingDay = "2014-06-04".
-    Reqs2 = [varieties, instruments, candlesticks].
-    %Reqs2 = [varieties, instruments, rt_markets, candlesticks].
-    rf_cheetah_sync:run(TradingDay, Reqs2).
-    如果遇到timeout 要进入数据库 market 删除表candlesticks和表market_ticks 中 今天的数据
-
-  非交易日使用:
-    	TradingDay = "2014-07-20".
-      rf_cheetah_sync:run(TradingDay, not_trading_day).
-
-  审核晋级用户
-  bundle exec thin start -p 4567 开启一个本地端口
-  root登陆 密码:root@lktz
-
-  导入新参赛选手名单 // 一个月一次 月初
-
-  要先审核名单晋级才能初始化
-
-  比赛成绩计算初始化 (缺用户操作日志)
-    TradingDay = "2014-07-21".
-    contest_initor:do_init(TradingDay).
-
-  计算初赛，复赛成绩 (缺用户操作日志)
-  rocket_finance_manager:calc_ranks(1, TradingDay).    % 计算模拟初赛成绩 > 7minutes
-  rocket_finance_manager:calc_ranks(2, TradingDay).    % 计算模拟复赛成绩 < 1minutes
-
-  统计初赛、复赛 比赛统计数据 (缺用户操作日志)
-  rocket_finance_manager:stat_contest(1, TradingDay).
-  rocket_finance_manager:stat_contest(1, TradingDay).   % 执行2次
-  rocket_finance_manager:stat_contest(2, TradingDay).   % 执行1次`
-  -------
-  rocket_finance_manager:stat_contest(1,"2014-09-03",undefined)
-
   计算不活跃用户
   rocket_finance_manager:count_inactive_days().
   计算单笔   (缺用户操作日志)
@@ -70,16 +20,6 @@
     TradingDay = "2013-12-13".
     equity_candlestick_manager:calculate(TradingDay).
 
-  导入实盘成绩
-  bundle exec thin start -p 4567 开启一个本地端口
-
-  iconv -f gbk -t utf8 real.csv > shipan_2014-08-29.utf8.csv
-  iconv -f gbk -t utf8 2014-08-29.csv > 2014-08-29.utf8.csv
-
-
-  淘汰长期不交易名单
-  ~/rocket_finance/lib/finance$ vim importer.rb 最后一个方法out_ids = [] 放入长期不交易的名单
-  rails runner lib/finance/importer.rb
   数据备份*
   god start thin-rocket_finance
   god stop thin-rocket_finance
@@ -98,8 +38,8 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
   update investors set phase_id = 120373, contest_status = 1, next_launch_date = "2014-08-07 00:00:00" where out_id = 100891;
 
-  Investor = rocket_finance_database:find_investor(pool, [{out_id, 102193}]).
-  rank_calculate_worker:async_calculate(Investor,"2014-08-01",undefined,undefined).
+  Investor = rocket_finance_database:find_investor(pool, [{out_id, 130695}]).
+  rank_calculate_worker:async_calculate(Investor,"2014-09-09",undefined,undefined).
   ------------------------------------------------------------------------------------
 
   ./rebar generate skeleton=otp.start-dev to=./ebin/
@@ -139,41 +79,63 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
  insert into reviews(investor_id,phase_id,comment,reviewed_at,status,created_at,updated_at,next_launch_date) values(5003,)
 
   审核
-LK100023通过审核，于2014-09-04参加复赛
-LK100244通过审核，于2014-09-04参加复赛
-LK100865通过审核，于2014-09-04参加复赛
-LK102038通过审核，于2014-09-04参加复赛
-LK109994通过审核，于2014-09-04参加复赛
-LK121540通过审核，于2014-09-04参加复赛
-LK132210通过审核，于2014-09-04参加复赛
-
-
-  实盘
+LK101345通过审核，于2014-09-26参加复赛，
+LK105093通过审核，于2014-09-26参加复赛，
+LK110773通过审核，于2014-09-26参加复赛，
+LK111576通过审核，于2014-09-26参加复赛，
+LK111579通过审核，于2014-09-26参加复赛，
+LK112588通过审核，于2014-09-26参加复赛，
+LK123461通过审核，于2014-09-26参加复赛，
+LK125437通过审核，于2014-09-26参加复赛，
+LK128962通过审核，于2014-09-26参加复赛，
+LK134325通过审核，于2014-09-26参加复赛，
+LK140667通过审核，于2014-09-26参加复赛，
 
   初赛
 长时间不交易
 
   晋级
-LK120874
-LK131770
-
-
+LK100677
+LK100985
+LK101105
+LK101971
+LK103564
+LK105137
+LK105750
+LK107580
+LK107663
+LK116987
+LK118470
+LK122795
+LK133219
+LK135056
+LK136149
+15
   淘汰
 
-  总淘汰共337 一共7067
+  总淘汰共476 一共4883
   复赛
 长时间不交易
 
   淘汰
-LK102866
-LK112093
-LK126233
+LK101009
+LK101716
+LK101963
+LK102684
+LK106231
+LK109774
+LK117960
+LK120495
+LK120756
+LK123300
+LK127492
+LK140602
 
 
   晋级
+LK102035
 
-
-  总淘汰 共 126
+  总淘汰 共 152
   select * from contest_ranks where  investor_id = 2674;
 
   少人
@@ -187,11 +149,11 @@ LK126233
   outIds_ids = aa.collect{|x| x.out_id.to_i}
 
 
-  LK101853通过审核，于2013-12-23参加复赛 id = 11208
+  LK130695通过审核，于2013-12-23参加复赛 id = 11208
 
   update investors set contest_id = 2,
   contest_status = 1,
   launch_init_cap = 500000,
-  next_launch_date = "2014-08-07 00:00:00" where out_id in (100891);
+  next_launch_date = "2014-09-09 00:00:00" where out_id in (130695);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
