@@ -1,0 +1,14 @@
+debian 安装搜狗拼音输入法
+
+添加源
+deb http://ftp.cn.debian.org/debian/ wheezy-proposed-updates main contrib non-free
+deb-src http://ftp.cn.debian.org/debian/ wheezy-proposed-updates main contrib non-free
+
+deb http://ftp.cn.debian.org/debian/ wheezy-backports main contrib non-free
+deb-src http://ftp.cn.debian.org/debian/ wheezy-backports main contrib non-free
+
+: 1.sudo apt-get update
+: 2.sudo apt-get autoremove fcitx fcitx-bin（假如之前已经安装了fcitx 1-4.2.0）
+: 3.sudo apt-get install fcitx
+: 4.sudo dpkg -i fcitx-sogoupinyin*.deb (到搜狗拼音官网下载该64位deb包）
+: 5.sudo im-config

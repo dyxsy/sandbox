@@ -38,8 +38,8 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
   update investors set phase_id = 120373, contest_status = 1, next_launch_date = "2014-08-07 00:00:00" where out_id = 100891;
 
-  Investor = rocket_finance_database:find_investor(pool, [{out_id, 130695}]).
-  rank_calculate_worker:async_calculate(Investor,"2014-09-09",undefined,undefined).
+  Investor = rocket_finance_database:find_investor(pool, [{out_id, 107823}]).
+  rank_calculate_worker:async_calculate(Investor,"2015-05-04",undefined,undefined).
   ------------------------------------------------------------------------------------
 
   ./rebar generate skeleton=otp.start-dev to=./ebin/
@@ -65,13 +65,15 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
 
   ==================比赛审核======================
-  update investors set contest_id = 2, contest_status = 2, comment = "于2014年05月06日参加复赛",next_launch_date = "2014-05-06 00:00:00", launch_init_cap = 500000 where out_id in(112802);
+  update investors set contest_id = 2, contest_status = 2, comment = "于2015年04月03日参加复赛",next_launch_date = "2015-04-03 00:00:00", launch_init_cap = 500000 where out_id in(121343);
 
-  select id from investors where out_id in(112802);
+  select id from investors where out_id in(121343);
   注:LK118381 没有执行一下步骤,原因reviews中没有他的记录
-  select id from reviews where investor_id = 12647;
-  update reviews set next_launch_date = "2014-05-06 00:00:00",reviewed_at = now(),status=1,comment = "于2014年05月06日参加复赛" where id in(2488);
+  select id from reviews where investor_id = (select id from investors where out_id in(121343));
+  update reviews set next_launch_date = "2015-03-20 00:00:00",reviewed_at = now(),status=1,comment = "于2015年03月20日参加复赛" where id in(4287);
 
+
+update investors set comment = "于2015年04月03日参加复赛", next_launch_date = "2015-04-03 00:00:00"
   ===============恢复数据=================
   pv ~/rf_data/rf.20131211_20140603_all.20130603_nokline.dump | mysql -u root rocket_finance
 
@@ -151,9 +153,9 @@ LK102035
 
   LK130695通过审核，于2013-12-23参加复赛 id = 11208
 
-  update investors set contest_id = 2,
+  update investors set contest_id = 1,
   contest_status = 1,
   launch_init_cap = 500000,
-  next_launch_date = "2014-09-09 00:00:00" where out_id in (130695);
+  next_launch_date = "2015-04-21 00:00:00" where out_id in (107823);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
