@@ -23,7 +23,7 @@
   数据备份*
   god start thin-rocket_finance
   god stop thin-rocket_finance
-  mysqldump -uroot rocket_finance --ignore-table=rocket_finance.equity_min_candlesticks  > ~/rf_data/rf.20111205_20140108_all.20140108_nokline.dump
+  mysqldump -uroot list_lktz --ignore-table=list_lktz.equity_min_candlesticks  > ~/rf_data/rf.20111205_20140108_all.20140108_nokline.dump
   ----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -38,15 +38,15 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
   update investors set phase_id = 120373, contest_status = 1, next_launch_date = "2014-08-07 00:00:00" where out_id = 100891;
 
-  Investor = rocket_finance_database:find_investor(pool, [{out_id, 107823}]).
-  rank_calculate_worker:async_calculate(Investor,"2015-05-04",undefined,undefined).
+  Investor = rocket_finance_database:find_investor(pool, [{out_id, 157903}]).
+  rank_calculate_worker:async_calculate(Investor,"2015-08-04",undefined,undefined).
   ------------------------------------------------------------------------------------
 
   ./rebar generate skeleton=otp.start-dev to=./ebin/
 
   erl_cheetah_admin:login("ninja", "ninja@admin", [investors, varieties]).
   erl_cheetah_admin:login("rocketfinance", "rocketfinance@lk", [monitor_groups]).
-  erl_cheetah_admin:login().
+  erl_cheetah_admin:login().z
 
   find_pre_trades(ConnPool, InvestorId, InstrumentId, TradingDay) ->
       SQL = list_to_binary(["select * from trades where investor_id = ? and instrument_id = ? and trading_day < ? and investment_id is null and trading_day > ? order by trade_time_ts asc"]),
@@ -153,9 +153,9 @@ LK102035
 
   LK130695通过审核，于2013-12-23参加复赛 id = 11208
 
-  update investors set contest_id = 1,
+  update investors set contest_id = 2,
   contest_status = 1,
   launch_init_cap = 500000,
-  next_launch_date = "2015-04-21 00:00:00" where out_id in (107823);
+  next_launch_date = "2015-07-31 00:00:00" where out_id in (121997);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;
