@@ -1,0 +1,108 @@
+
+cheetah_admin:sign_in_via_web(ninja,ninja@admin).
+cheetah_admin:sync_follow_orders(56).
+
+arr = [{p: 0, n: 1},{p: 1, n: 2},{p: 2, n: 4},{p: 1, n: 3}];
+
+s = []
+arr.each do |a|
+	a
+end
+
+
+
+[[1],['',2],['','',4],['',3]]
+
+
+whereis(process_utils:generate_name(net_backbone, <<"ninja">>))
+whereis(process_utils:generate_name(market_net_backbone, 100044))
+
+
+{struct,[{<<"uid">>,50},{<<"capital_type">>,<<"CNY">>},{<<"trading_day">>,1437004800},
+
+{<<"settlement_capital">>,{struct,[
+{<<"sid">>,52318},
+{<<"uid">>,50},
+{<<"currency">>,<<"CNY">>},
+{<<"total_capital">>,122802582},
+{<<"margin">>,0},
+{<<"commission">>,15782},
+{<<"win_by_exit">>,-186000},
+{<<"in_out_cap">>,0}]}}
+
+表格名                       对应数据库表字段                       ?SETTLEMENTS接口同步中包含的字段
+
+客户证券现货内部资金账户        ？
+交易日期                    capitals.trading_day
+客户名称                    investors.login
+查询时间                    自动生成
+
+上日结存                    capitals.pre_deposit
+当日存取合计                 capitals.total_deposit_withdraw        in_out_cap
+当日盈亏（平仓盈亏）          capitals.close_profit                   win_by_exit
+当日总权利金                  ？
+当日手续费                   capitals.commission                     commission
+当日结存                    capitals.equity	                         total_capital
+结算盈亏                    平仓盈亏-手续费
+风险度                       capitals.risk_degree
+追加保证金                   capitals.additional_margin
+
+客户权益                    当日结存+保证金
+实有货币资金	                 ？
+非货币充抵金额               ？
+货币充抵金额	                 ？
+冻结资金                    accounts.frozen_capital
+保证金占用                   capitals.margin                         margin
+可用资金                    capitals.available
+
+
+## 成绩回滚
+
+
+119881,150587,148204,107443,121041,117119,114474,100039,135705,100072
+select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024);
+
+
+update investors set contest_status = 1, comment = NULL where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024);
+
+update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024)));
+
+
+
+update investors set contest_status = 1, comment = NULL where contest_status = 0;
+
+update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 0));
+
+
+
+
+insert into participations(investor_id,contest_id,phase_id)
+values(16891,1,320355),(19609,1,320511),(36291,1,331953),(20759,1,320572),(14296,1,330691),(1694729,1,333689);
+
+
+select * from phases where  updated_at > '2015-08-04 18:00:00' and ended_at = '2015-07-29 00:00:00';
+
+select id,login,contest_status,phase_id,updated_at from investors where updated_at > '2015-08-05 13:00:00';
+
+select * from participations where created_at > '2015-08-05 13:00:00' and contest_id = 1;
+
+module Ranks
+  class Importer
+    class << self
+      def investors
+        # 将从成绩表中提取出来的投资者outId数组放入ids中
+        puts "~~~~~~> start"
+Ranks::Investor.transaction do
+  Ranks::Investor.where("updated_at > '2015-08-05 13:00:00'").where(contest_status:-1).find_each do |inves|
+      phase = Ranks::Phase.where("updated_at > '2015-08-04 13:00:00'").where(investor_id:inves.id,ended_at:'2015-07-29 00:00:00').first
+      inves.update_attributes(phase_id: phase.id,contest_id:1, contest_status:1)
+
+      phase.update_attributes(ended_at:nil,result:1,comment:nil)
+      Ranks::Participation.create(investor_id: inves.id,phase_id:phase.id,contest_id:inves.contest_id)
+  end
+end
+      end
+    end
+  end
+end
+Ranks::Importer.investors
