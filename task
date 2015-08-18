@@ -38,7 +38,7 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
   update investors set phase_id = 120373, contest_status = 1, next_launch_date = "2014-08-07 00:00:00" where out_id = 100891;
 
-  Investor = rocket_finance_database:find_investor(pool, [{out_id, 157903}]).
+  Investor = rocket_finance_database:find_investor(pool, [{out_id, 114621}]).
   rank_calculate_worker:async_calculate(Investor,"2015-08-04",undefined,undefined).
   ------------------------------------------------------------------------------------
 
@@ -156,6 +156,6 @@ LK102035
   update investors set contest_id = 2,
   contest_status = 1,
   launch_init_cap = 500000,
-  next_launch_date = "2015-07-31 00:00:00" where out_id in (121997);
+  next_launch_date = "2015-08-10 00:00:00" where out_id in (100532,138024);
 
   select * from daily_cumulative_values where investor_id = 7414 order by id desc limit 3\G;

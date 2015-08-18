@@ -60,12 +60,12 @@ whereis(process_utils:generate_name(market_net_backbone, 100044))
 
 
 119881,150587,148204,107443,121041,117119,114474,100039,135705,100072
-select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024);
+select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (111684,129507,151397);
 
 
-update investors set contest_status = 1, comment = NULL where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024);
+update investors set contest_status = 1, comment = NULL where contest_status = 2 and comment = '待审核' and out_id not in (102356,149094,150590,151075,151379,151676,151706,151761,108031,155037,101584,108653,115163,127794,140526,154297,100106,108184,130908,126373);
 
-update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (100021,156023,105430,142273,105780,138024)));
+update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (102356,149094,150590,151075,151379,151676,151706,151761,108031,155037,101584,108653,115163,127794,140526,154297,100106,108184,130908,126373)));
 
 
 
@@ -106,3 +106,84 @@ end
   end
 end
 Ranks::Importer.investors
+
+
+
+
+=============
+def initialize
+  ＠out = []
+end
+
+def format(root)
+  @root = root
+  visit root, 0
+end
+
+def visit(node, leven)
+  cols = []
+  cols << "",""
+  cols << node_str
+  @out << cols
+  visit_children(node, leven)
+end
+
+def visit_children(node, leven)
+  kids = []
+  if @root == node
+    kids = node
+  else
+    return unless node.children.length > 0
+    kids = node.children
+  end
+  return if kids.empty?
+  leven = leven + 1
+  kids.each{|n| visit(n, leven)}
+end
+
+-------------------
+module Ranks
+  class Importer
+    class << self
+      def format(root)
+        @out = []
+        @root = {name:'root', children:[{name:'a', children:[]},{name:'b', children:[]},{name:'c', children:[]}]}
+        visit root, 0
+      end
+
+      def visit(node, leven)
+        cols = []
+        cols << "",""
+        cols << node.name
+        @out << cols
+        visit_children(node, leven)
+      end
+
+      def visit_children(node, leven)
+        kids = []
+        if @root == node
+          kids = node
+        else
+          return unless node.children.length > 0
+          kids = node.children
+        end
+        return if kids.empty?
+        leven = leven + 1
+        kids.each{|n| visit(n, leven)}
+      end
+    end
+  end
+end
+Ranks::Importer.investors
+
+===============
+ hin start -e production  -p 3100
+ 1345  thin start  -p 3100
+ 1350  thin start  -p 3100
+ 1352  thin start -e production  -p 3100
+ 1356  thin start -e production  -p 3100
+ 1366  thin start -e production  -p 3100
+ 1379  thin start -e production  -p 3100
+ 1508  thin start -p 5000
+ 1512  thin start -p 5000
+ 1514  thin start -p 5000
