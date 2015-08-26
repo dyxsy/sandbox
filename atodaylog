@@ -63,17 +63,9 @@ whereis(process_utils:generate_name(market_net_backbone, 100044))
 select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (111684,129507,151397);
 
 
-update investors set contest_status = 1, comment = NULL where contest_status = 2 and comment = '待审核' and out_id not in (102356,149094,150590,151075,151379,151676,151706,151761,108031,155037,101584,108653,115163,127794,140526,154297,100106,108184,130908,126373);
+update investors set contest_status = 1, comment = NULL where contest_status = 2 and comment = '待审核' and out_id not in (133858,145005,104212,104664,123100,127176,145172,106503,117426,121104,143843,153097,101940,109992,111475,140115);
 
-update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (102356,149094,150590,151075,151379,151676,151706,151761,108031,155037,101584,108653,115163,127794,140526,154297,100106,108184,130908,126373)));
-
-
-
-update investors set contest_status = 1, comment = NULL where contest_status = 0;
-
-update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 0));
-
-
+update phases set ended_at = NULL, result = 1, comment = NULL where id in (select phase_id from investors where out_id in (select out_id from investors where contest_status = 2 and comment = '待审核' and out_id not in (133858,145005,104212,104664,123100,127176,145172,106503,117426,121104,143843,153097,101940,109992,111475,140115)));
 
 
 insert into participations(investor_id,contest_id,phase_id)
@@ -187,3 +179,38 @@ Ranks::Importer.investors
  1508  thin start -p 5000
  1512  thin start -p 5000
  1514  thin start -p 5000
+
+
+ ================2015-08-26
+
+ cheetah_admin:sign_in_via_web(ninja,ninja@admin).
+
+
+
+rocket_finance_manager:rollback('2015-08-14').
+
+rocket_finance_manager:rollback_diff('2015-08-14').
+
+
+
+Investor = rocket_finance_database:find_investor(pool, [{out_id, 121041}]).
+rank_calculate_worker:async_calculate(Investor,"2015-08-19",undefined).
+
+datetime_utils:datetime_as_string({{2015,8,20},undefined}).
+
+cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
+
+
+select sum(cumulative_net_profit)*7/10 from (select cumulative_net_profit from ranks where investor_id = 7231986 and contest_id = 2 and phase_id = 329181 and cumulative_net_profit > 0 and trading_day <= '2015-08-19' order by cumulative_net_profit desc limit 3) as c
+
+
+select cumulative_net_profit,trading_day from ranks where investor_id = 71 and contest_id = 1 and phase_id = 334855 and cumulative_net_profit > 0 and trading_day <= '2015-08-19' order by cumulative_net_profit desc limit 3
+
+
+,101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044,151123,154787,155970,156960
+
+
+select id,out_id,phase_id,contest_id,contest_status,next_launch_date from investors where out_id in (101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044,151123,154787,155970,156960);
+
+
+select * from phases where id in (select phase_id from investors where out_id in (101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044,151123,154787,155970,156960));

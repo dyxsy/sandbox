@@ -38,8 +38,8 @@ select * from contest_ranks where investor_id = 20275 and contest_id = 2 and pha
 
   update investors set phase_id = 120373, contest_status = 1, next_launch_date = "2014-08-07 00:00:00" where out_id = 100891;
 
-  Investor = rocket_finance_database:find_investor(pool, [{out_id, 114621}]).
-  rank_calculate_worker:async_calculate(Investor,"2015-08-04",undefined,undefined).
+  Investor = rocket_finance_database:find_investor(pool, [{out_id, 136318}]).
+  rank_calculate_worker:async_calculate(Investor,"2015-08-19",undefined).
   ------------------------------------------------------------------------------------
 
   ./rebar generate skeleton=otp.start-dev to=./ebin/
