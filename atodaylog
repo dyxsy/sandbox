@@ -1,23 +1,23 @@
-* 日K线通过 实时行情来算
-* 计算逻辑在rails中实现
-* 暂时只算IF合约
-* 实时行情由TJP来导入
-
-* 成绩网累积盈亏走势图的累积折后盈亏要根据不同比赛显示不同比例
-
+update phases set optimal_at = '2015-11-06 00:00:00' where id = 399665;
 =============
 1729779 81333096  1888
-cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
 
-update investors set trade_object = "commodity", contest_id = 3, contest_status = 1, launch_init_cap = 500000, next_launch_date = "2015-11-02 00:00:00" where out_id in (46,981,963,958,948,947,946,934,929,928,892,875,872,238,204,52,1888,1887,1877);
+cheetah_admin:sign_in_via_web(ninja,ninja@admin).
+
+cheetah_requestor:request(100044, undefined, instruments).
+
+cheetah_requestor:request(100044, undefined, products).
+
+% market_ticket_manager:start(CheetahUId)
+
+update investors set trade_object = "commodity", contest_id = 2, contest_status = 1, launch_init_cap = 500000, next_launch_date = "2015-11-10 00:00:00" where out_id in (149729);
 
 whereis(contest_initor)
 contest_initor:do_init("2015-11-02", 127048, undefined).
 
-rocket_finance_manager:calc_ranks(3, "2015-11-03", {127048, undefined, undefined, calc_prel})
+rocket_finance_manager:calc_ranks(8, "2015-12-14", {127048, undefined, undefined, calc_prel})
 
- Investor = rocket_finance_database:find_investor(pool, [{out_id, 1888}]).
- rank_calculate_worker:async_calculate(Investor,"2015-11-02",undefined).
+
 
 select out_id from investors where login in (81330038,81330050,81330025,81332035,81332017,81332002,81332001,81332012,81330018,81330388,81330383,81332000,81330382,81330347,81330330,81330327,81333096,81333095,81333083)
 
@@ -27,136 +27,25 @@ select out_id from investors where login in (81330038,81330050,81330025,81332035
 cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
 cheetah_admin:sign_in_via_web(ninja,ninja@admin).
 
+cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
+
 cheetah_requestor:request(127048, undefined, instruments)
+
 cheetah_admin:sync_follow_orders(56).
 
 
-rocket_finance_manager:calc_ranks(8, "2015-10-27", {127048, undefined, undefined, calc_prel})
-rocket_finance_manager:stat_contest(3, "2015-11-04", undefined)
+contest_initor:do_init("2015-11-02", 127048, undefined).
+
+rocket_finance_manager:calc_ranks(2, "2015-12-01", {127048, undefined, undefined, calc_prel})
+rocket_finance_manager:stat_contest(, "2015-12-15", undefined)
 
 equity_candlestick_manager:pull_candlesticks(127048, "2015-10-21")
 equity_candlestick_manager:calculate("2015-10-12", 127048, undefined)
-equity_candlestick_worker:calculate(datetime_utils:date_to_epoch({2015,10,20}), 5342, [day])
+equity_candlestick_worker:calculate(datetime_utils:date_to_epoch({2016,01,25}), 22029, [day])
 
 f().
-Investor = rocket_finance_database:find_investor(pool, [{out_id, 105389 }]).
-rank_calculate_worker:async_calculate(Investor,"2015-10-20",undefined).
-
-
-whereis(process_utils:generate_name(net_backbone, <<"ninja">>))
-whereis(process_utils:generate_name(market_net_backbone, 100044))
-
-==============> 比赛参赛处理
-140951 2015-09-24开始商品复赛
-select id,phase_id,contest_id,contest_status,next_launch_date,trade_object from investors where out_id in (150375, 100093);
-
-
-update investors set trade_object = "commodity", contest_id = 2, contest_status = 1, launch_init_cap = 500000, next_launch_date = "2015-10-20 00:00:00" where out_id in (105389);
-
-
-update investors set contest_status = -1 where out_id in (102240,103898,106572,109109,118831,121055,121108,137538 )
-
-update phases set result = 0,ended_at = '2015-10-23 00:00:00' where id in (select phase_id from investors where out_id in (102240,103898,106572,109109,118831,121055,121108,137538 ))
-
-update contest_ranks set ended_at = '2015-10-23 00:00:00' where phase_id in (select phase_id from investors where out_id in (102240,103898,106572,109109,118831,121055,121108,137538 ))
-==============》
-{struct,[{<<"uid">>,50},{<<"capital_type">>,<<"CNY">>},{<<"trading_day">>,1437004800},
-
-{<<"settlement_capital">>,{struct,[
-{<<"sid">>,52318},
-{<<"uid">>,50},
-{<<"currency">>,<<"CNY">>},
-{<<"total_capital">>,122802582},
-{<<"margin">>,0},
-{<<"commission">>,15782},
-{<<"win_by_exit">>,-186000},
-{<<"in_out_cap">>,0}]}}
-
-表格名                       对应数据库表字段                       ?SETTLEMENTS接口同步中包含的字段
-
-客户证券现货内部资金账户        ？
-交易日期                    capitals.trading_day
-客户名称                    investors.login
-查询时间                    自动生成
-
-上日结存                    capitals.pre_deposit
-当日存取合计                 capitals.total_deposit_withdraw        in_out_cap
-当日盈亏（平仓盈亏）          capitals.close_profit                   win_by_exit
-当日总权利金                  ？
-当日手续费                   capitals.commission                     commission
-当日结存                    capitals.equity	                         total_capital
-结算盈亏                    平仓盈亏-手续费
-风险度                       capitals.risk_degree
-追加保证金                   capitals.additional_margin
-
-客户权益                    当日结存+保证金
-实有货币资金	                 ？
-非货币充抵金额               ？
-货币充抵金额	                 ？
-冻结资金                    accounts.frozen_capital
-保证金占用                   capitals.margin                         margin
-可用资金                    capitals.available
-
--------------------
-module Ranks
-  class Importer
-    class << self
-      def format(root)
-        @out = []
-        @root = {name:'root', children:[{name:'a', children:[]},{name:'b', children:[]},{name:'c', children:[]}]}
-        visit root, 0
-      end
-
-      def visit(node, leven)
-        cols = []
-        cols << "",""
-        cols << node.name
-        @out << cols
-        visit_children(node, leven)
-      end
-
-      def visit_children(node, leven)
-        kids = []
-        if @root == node
-          kids = node
-        else
-          return unless node.children.length > 0
-          kids = node.children
-        end
-        return if kids.empty?
-        leven = leven + 1
-        kids.each{|n| visit(n, leven)}
-      end
-    end
-  end
-end
-Ranks::Importer.investors
-================2015-08-26
-
-rocket_finance_manager:rollback('2015-08-14').
-
-rocket_finance_manager:rollback_diff('2015-08-14').
+Investor = rocket_finance_database:find_investor(pool, [{out_id, 141888 }]).
+rank_calculate_worker:async_calculate(Investor,"2016-01-25",undefined).
 
 
 
-Investor = rocket_finance_database:find_investor(pool, [{out_id, 107798}]).
-rank_calculate_worker:async_calculate(Investor,"2015-09-11",undefined).
-
-datetime_utils:datetime_as_string({{2015,8,20},undefined}).
-
-cheetah_admin:sign_in_via_web(rocketfinance,rocketfinance@lk).
-
-
-select sum(cumulative_net_profit)*7/10 from (select cumulative_net_profit from ranks where investor_id = 7231986 and contest_id = 2 and phase_id = 329181 and cumulative_net_profit > 0 and trading_day <= '2015-08-19' order by cumulative_net_profit desc limit 3) as c
-
-
-select cumulative_net_profit,trading_day from ranks where investor_id = 71 and contest_id = 1 and phase_id = 334855 and cumulative_net_profit > 0 and trading_day <= '2015-08-19' order by cumulative_net_profit desc limit 3
-
-
-,101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044,151123,154787,155970,156960
-
-
-select id,out_id,phase_id,contest_id,contest_status,next_launch_date from investors where out_id in (101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044);
-
-
-select * from phases where id in (select phase_id from investors where out_id in (101829,106219,106916,108990,113160,118154,126107,130713,140771,143187,143491,143702,146723,150598,150985,151044));
